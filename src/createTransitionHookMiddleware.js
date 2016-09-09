@@ -81,8 +81,9 @@ export default function createTransitionHookMiddleware() {
             return next(action);
           }
 
-          // Transition hooks do not apply to this update.
-          if (payload.action !== 'POP' || payload.delta === 0) {
+          // This is the initial load. It doesn't make sense to block this
+          // transition.
+          if (payload.delta === 0) {
             return next(action);
           }
 
