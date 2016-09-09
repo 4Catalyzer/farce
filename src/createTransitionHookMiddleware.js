@@ -20,7 +20,7 @@ function shouldAllowTransition(transitionHooks, location, callback) {
   }
 
   resolveMaybePromise(transitionHooks[0](location), (result) => {
-    if (result === true) {
+    if (result === true || result == null) {
       shouldAllowTransition(
         transitionHooks.slice(1),
         location,

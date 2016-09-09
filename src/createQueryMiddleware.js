@@ -1,9 +1,11 @@
 import ActionTypes from './ActionTypes';
 
 function stringifyQuery(location, stringify) {
+  const queryString = stringify(location.query);
+
   return {
     ...location,
-    search: `?${stringify(location.query)}`,
+    search: queryString ? `?${queryString}` : '',
   };
 }
 
