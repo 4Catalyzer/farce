@@ -8,7 +8,7 @@ farce can create a history object that is compatible with [history](https://gith
 
 ## Usage
 
-Without Redux:
+### Without Redux
 
 ```js
 import { BrowserProtocol, createHistory, queryMiddleware } from 'farce';
@@ -19,7 +19,7 @@ const history = createHistory(
 );
 ```
 
-With Redux:
+### With Redux
 
 ```js
 import {
