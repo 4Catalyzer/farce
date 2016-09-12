@@ -8,4 +8,5 @@ export createQueryMiddleware from './createQueryMiddleware';
 export createStoreHistory from './createStoreHistory';
 export createTransitionHookMiddleware from './createTransitionHookMiddleware';
 export ensureLocationMiddleware from './ensureLocationMiddleware';
+export locationReducer from './locationReducer';
 export queryMiddleware from './queryMiddleware';

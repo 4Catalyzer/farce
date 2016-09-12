@@ -26,17 +26,21 @@ import {
   Actions as FarceActions,
   BrowserProtocol,
   createHistoryEnhancer,
+  createStoreHistory,
+  locationReducer,
   queryMiddleware,
 } from 'farce';
+import { combineReducers, createStore } from 'redux';
 
 const store = createStore(
-  reducer,
+  combineReducers({ location: locationReducer }),
   createHistoryEnhancer(
     new BrowserProtocol(),
     queryMiddleware,
   ),
 );
+
 store.dispatch(FarceActions.init());
 
-const history = createStoreHistory(store, selectLocation);
+const history = createStoreHistory(store, state => state.location);
 ```
