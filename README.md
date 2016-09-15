@@ -1,4 +1,4 @@
-# farce
+# farce [![npm][npm-badge]][npm]
 
 History repeats itself.
 
@@ -44,3 +44,6 @@ store.dispatch(FarceActions.init());
 
 const history = createStoreHistory(store, state => state.location);
 ```
+
+[npm-badge]: https://img.shields.io/npm/v/farce.svg
+[npm]: https://www.npmjs.org/package/farce
