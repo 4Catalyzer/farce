@@ -6,6 +6,6 @@ export default {
   GO: '@@farce/GO',
   CREATE_HREF: '@@farce/CREATE_HREF',
   CREATE_LOCATION: '@@farce/CREATE_LOCATION',
-  LOCATION_UPDATED: '@@farce/LOCATION_UPDATED',
+  UPDATE_LOCATION: '@@farce/UPDATE_LOCATION',
   DISPOSE: '@@farce/DISPOSE',
 };
