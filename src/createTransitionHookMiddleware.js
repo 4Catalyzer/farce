@@ -35,6 +35,7 @@ function shouldAllowTransition(transitionHooks, location, callback) {
 }
 
 export default function createTransitionHookMiddleware() {
+  let nextStep = null;
   let transitionHooks = [];
 
   function addTransitionHook(transitionHook) {
@@ -48,17 +49,13 @@ export default function createTransitionHookMiddleware() {
   }
 
   function transitionHookMiddleware({ dispatch }) {
-    let step = null;
-
     return next => (action) => {
       const { type, payload } = action;
 
-      // This would be cleaner with a real generator, but I'd rather not pull
-      // in the Regenerator runtime here.
-      if (step && type === ActionTypes.UPDATE_LOCATION) {
-        const currentStep = step;
-        step = null; // Null out step so we don't hit this check again.
-        return currentStep();
+      if (nextStep && type === ActionTypes.UPDATE_LOCATION) {
+        const step = nextStep;
+        nextStep = null;
+        return step(next, action);
       }
 
       switch (type) {
@@ -66,7 +63,16 @@ export default function createTransitionHookMiddleware() {
           return shouldAllowTransition(
             transitionHooks,
             payload,
-            allowTransition => (allowTransition ? next(action) : null),
+            (allowTransition) => {
+              if (!allowTransition) {
+                return null;
+              }
+
+              // Skip the repeated transition hook check on UPDATE_LOCATION.
+              nextStep = (nextNext, nextAction) => nextNext(nextAction);
+
+              return next(action);
+            },
           );
 
         case ActionTypes.UPDATE_LOCATION:
@@ -90,28 +96,29 @@ export default function createTransitionHookMiddleware() {
             );
           }
 
-          step = () => {
-            shouldAllowTransition(
-              transitionHooks,
-              payload,
-              (allowTransition) => {
-                if (!allowTransition) {
-                  return null;
-                }
-
-                step = () => {
-                  next(action);
-                };
-
-                dispatch(Actions.go(payload.delta));
+          // This step handles the rewind. It needs to run after the rewind so
+          // the window location is on the original location while prompting.
+          nextStep = () => shouldAllowTransition(
+            transitionHooks,
+            payload,
+            (allowTransition) => {
+              if (!allowTransition) {
                 return null;
-              },
-            );
-          };
+              }
+
+              // Release the original UPDATE_LOCATION when the un-rewind
+              // happens. We need to do so here to maintain the invariant that
+              // the store location only updates after the window location.
+              nextStep = () => next(action);
+
+              dispatch(Actions.go(payload.delta));
+              return undefined;
+            },
+          );
 
           // TODO: Don't rewind if the transition is synchronously allowed.
           dispatch(Actions.go(-payload.delta));
-          return null;
+          return undefined;
 
         default:
           return next(action);
