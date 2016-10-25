@@ -23,13 +23,14 @@ export default function createHistoryEnhancer(protocol, middlewares = []) {
   return function historyEnhancer(createStore) {
     return (...args) => {
       const transitionHookMiddleware = createTransitionHookMiddleware();
-      const locationMiddlewares = [...middlewares, transitionHookMiddleware];
 
       const middlewareEnhancer = applyMiddleware(
         ensureLocationMiddleware,
-        ...locationMiddlewares,
+        ...middlewares,
+        transitionHookMiddleware,
         createHistoryMiddleware(protocol),
-        ...locationMiddlewares.reverse(), // Safe to mutate; we own this array.
+        transitionHookMiddleware,
+        ...[...middlewares].reverse(),
       );
 
       const store = middlewareEnhancer(createStore)(...args);
