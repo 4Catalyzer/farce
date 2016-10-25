@@ -4,7 +4,7 @@ History repeats itself.
 
 farce is a simple, extensible library for managing browser history and navigation. It uses [Redux](http://redux.js.org/) internally to manage state and offer a clean API for extending and configuring behavior.
 
-farce can create a history object that is compatible with [history](https://github.com/mjackson/history) v2 for use with [React Router](https://github.com/reactjs/react-router) v2, or it can enhance your own Redux store and let you manage history location with the rest of your state.
+farce can create a history object that is compatible with [history](https://github.com/mjackson/history) v2 for use with [React Router](https://github.com/ReactTraining/react-router) v2, or it can enhance your own Redux store and let you manage history location with the rest of your state.
 
 ## Usage
 
@@ -15,7 +15,7 @@ import { BrowserProtocol, createHistory, queryMiddleware } from 'farce';
 
 const history = createHistory(
   new BrowserProtocol(),
-  queryMiddleware,
+  [queryMiddleware],
 );
 ```
 
@@ -33,16 +33,18 @@ import {
 import { combineReducers, createStore } from 'redux';
 
 const store = createStore(
-  combineReducers({ location: locationReducer }),
+  combineReducers({
+    location: locationReducer,
+  }),
   createHistoryEnhancer(
     new BrowserProtocol(),
-    queryMiddleware,
+    [queryMiddleware],
   ),
 );
 
 store.dispatch(FarceActions.init());
 
-const history = createStoreHistory(store, state => state.location);
+const history = createStoreHistory(store);
 ```
 
 [npm-badge]: https://img.shields.io/npm/v/farce.svg

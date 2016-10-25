@@ -35,7 +35,7 @@ export default function createQueryMiddleware({ parse, stringify }) {
               stringifyQuery(payload, stringify) :
               parseQuery(payload, parse),
           });
-        case ActionTypes.LOCATION_UPDATED:
+        case ActionTypes.UPDATE_LOCATION:
           return next({
             type,
             payload: parseQuery(payload, parse),

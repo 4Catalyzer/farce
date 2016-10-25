@@ -3,11 +3,8 @@ import ActionTypes from './ActionTypes';
 
 function resolveMaybePromise(maybePromise, callback) {
   if (maybePromise && typeof maybePromise.then === 'function') {
-    maybePromise.then((result) => {
-      callback(result);
-    });
-
-    return null;
+    maybePromise.then(callback);
+    return undefined;
   }
 
   return callback(maybePromise);
@@ -15,28 +12,25 @@ function resolveMaybePromise(maybePromise, callback) {
 
 function shouldAllowTransition(transitionHooks, location, callback) {
   if (!transitionHooks.length) {
-    callback(true);
-    return;
+    return callback(true);
   }
 
-  resolveMaybePromise(transitionHooks[0](location), (result) => {
+  return resolveMaybePromise(transitionHooks[0](location), (result) => {
     if (result == null) {
-      shouldAllowTransition(
+      return shouldAllowTransition(
         transitionHooks.slice(1),
         location,
         (nextResult) => {
           callback(nextResult);
         },
       );
-      return;
     }
 
     if (typeof result === 'boolean') {
-      callback(result);
-      return;
+      return callback(result);
     }
 
-    callback(window.confirm(result)); // eslint-disable-line no-alert
+    return callback(window.confirm(result)); // eslint-disable-line no-alert
   });
 }
 
@@ -53,18 +47,18 @@ export default function createTransitionHookMiddleware() {
     };
   }
 
-  function transitionHookMiddleware() {
-    let nextStep = null;
+  function transitionHookMiddleware({ dispatch }) {
+    let step = null;
 
     return next => (action) => {
       const { type, payload } = action;
 
       // This would be cleaner with a real generator, but I'd rather not pull
       // in the Regenerator runtime here.
-      if (nextStep && type === ActionTypes.LOCATION_UPDATED) {
-        const step = nextStep;
-        nextStep = null;
-        return step();
+      if (step && type === ActionTypes.UPDATE_LOCATION) {
+        const currentStep = step;
+        step = null; // Null out step so we don't hit this check again.
+        return currentStep();
       }
 
       switch (type) {
@@ -75,7 +69,7 @@ export default function createTransitionHookMiddleware() {
             allowTransition => (allowTransition ? next(action) : null),
           );
 
-        case ActionTypes.LOCATION_UPDATED:
+        case ActionTypes.UPDATE_LOCATION:
           // No transition hooks to run.
           if (!transitionHooks.length) {
             return next(action);
@@ -96,7 +90,7 @@ export default function createTransitionHookMiddleware() {
             );
           }
 
-          nextStep = () => {
+          step = () => {
             shouldAllowTransition(
               transitionHooks,
               payload,
@@ -105,17 +99,18 @@ export default function createTransitionHookMiddleware() {
                   return null;
                 }
 
-                nextStep = () => {
+                step = () => {
                   next(action);
                 };
 
-                next(Actions.go(payload.delta));
+                dispatch(Actions.go(payload.delta));
                 return null;
               },
             );
           };
 
-          next(Actions.go(-payload.delta));
+          // TODO: Don't rewind if the transition is synchronously allowed.
+          dispatch(Actions.go(-payload.delta));
           return null;
 
         default:

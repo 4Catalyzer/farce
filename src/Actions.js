@@ -20,16 +20,6 @@ export default {
     payload: delta,
   }),
 
-  createHref: location => ({
-    type: ActionTypes.CREATE_HREF,
-    payload: location,
-  }),
-
-  createLocation: location => ({
-    type: ActionTypes.CREATE_LOCATION,
-    payload: location,
-  }),
-
   dispose: () => ({
     type: ActionTypes.DISPOSE,
   }),

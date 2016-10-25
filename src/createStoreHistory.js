@@ -2,14 +2,17 @@ import Actions from './Actions';
 
 import maybePromisify from './utils/maybePromisify';
 
-export default function createStoreHistory(store, selectLocation) {
+export default function createStoreHistory(
+  store,
+  getLocation = ({ location }) => location,
+) {
   return {
     listen(listener) {
-      let location = selectLocation(store.getState());
+      let location = getLocation(store.getState());
       listener(location);
 
       return store.subscribe(() => {
-        const nextLocation = selectLocation(store.getState());
+        const nextLocation = getLocation(store.getState());
 
         if (nextLocation !== location) {
           listener(nextLocation);
@@ -19,7 +22,7 @@ export default function createStoreHistory(store, selectLocation) {
     },
 
     listenBefore(hook) {
-      return store.addTransitionHook(maybePromisify(hook, 1));
+      return store.farce.addTransitionHook(maybePromisify(hook, 1));
     },
 
     push(location) {
@@ -43,11 +46,11 @@ export default function createStoreHistory(store, selectLocation) {
     },
 
     createHref(location) {
-      return store.dispatch(Actions.createHref(location));
+      return store.farce.createHref(location);
     },
 
     createLocation(location) {
-      return store.dispatch(Actions.createLocation(location));
+      return store.farce.createLocation(location);
     },
 
     dispose() {
