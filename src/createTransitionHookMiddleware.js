@@ -1,8 +1,10 @@
+import isPromise from 'is-promise';
+
 import Actions from './Actions';
 import ActionTypes from './ActionTypes';
 
 function resolveMaybePromise(maybePromise, callback) {
-  if (maybePromise && typeof maybePromise.then === 'function') {
+  if (isPromise(maybePromise)) {
     maybePromise.then(callback);
     return undefined;
   }
