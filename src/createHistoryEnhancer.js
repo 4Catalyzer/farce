@@ -32,11 +32,11 @@ export default function createHistoryEnhancer({
 
       const middlewareEnhancer = applyMiddleware(
         ensureLocationMiddleware,
+        transitionHookMiddleware,
         ...middlewares,
-        transitionHookMiddleware,
         createHistoryMiddleware(protocol),
-        transitionHookMiddleware,
         ...[...middlewares].reverse(),
+        transitionHookMiddleware,
       );
 
       const store = middlewareEnhancer(createStore)(...args);
