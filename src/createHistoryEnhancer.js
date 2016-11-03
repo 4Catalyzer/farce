@@ -42,7 +42,7 @@ export default function createHistoryEnhancer(protocol, middlewares = []) {
         ...store,
         farce: {
           ...boundActionCreators,
-          addTransitionHook: transitionHookMiddleware.addTransitionHook,
+          addTransitionHook: transitionHookMiddleware.addHook,
         },
       };
     };

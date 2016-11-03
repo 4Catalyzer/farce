@@ -12,15 +12,15 @@ function resolveMaybePromise(maybePromise, callback) {
   return callback(maybePromise);
 }
 
-function shouldAllowTransition(transitionHooks, location, callback) {
-  if (!transitionHooks.length) {
+function runHooks(hooks, location, callback) {
+  if (!hooks.length) {
     return callback(true);
   }
 
-  return resolveMaybePromise(transitionHooks[0](location), (result) => {
+  return resolveMaybePromise(hooks[0](location), (result) => {
     if (result == null) {
-      return shouldAllowTransition(
-        transitionHooks.slice(1),
+      return runHooks(
+        hooks.slice(1),
         location,
         (nextResult) => {
           callback(nextResult);
@@ -28,25 +28,33 @@ function shouldAllowTransition(transitionHooks, location, callback) {
       );
     }
 
-    if (typeof result === 'boolean') {
-      return callback(result);
-    }
-
-    return callback(window.confirm(result)); // eslint-disable-line no-alert
+    return callback(result);
   });
+}
+
+function maybeConfirm(result) {
+  if (typeof result === 'boolean') {
+    return result;
+  }
+
+  return window.confirm(result); // eslint-disable-line no-alert
+}
+
+function runAllowTransition(hooks, location, callback) {
+  return runHooks(hooks, location, result => (
+    callback(maybeConfirm(result))
+  ));
 }
 
 export default function createTransitionHookMiddleware() {
   let nextStep = null;
-  let transitionHooks = [];
+  let hooks = [];
 
-  function addTransitionHook(transitionHook) {
-    transitionHooks.push(transitionHook);
+  function addHook(hook) {
+    hooks.push(hook);
 
     return () => {
-      transitionHooks = transitionHooks.filter(
-        item => item !== transitionHook
-      );
+      hooks = hooks.filter(item => item !== hook);
     };
   }
 
@@ -62,24 +70,19 @@ export default function createTransitionHookMiddleware() {
 
       switch (type) {
         case ActionTypes.TRANSITION:
-          return shouldAllowTransition(
-            transitionHooks,
-            payload,
-            (allowTransition) => {
-              if (!allowTransition) {
-                return null;
-              }
+          return runAllowTransition(hooks, payload, (allowTransition) => {
+            if (!allowTransition) {
+              return null;
+            }
 
-              // Skip the repeated transition hook check on UPDATE_LOCATION.
-              nextStep = (nextNext, nextAction) => nextNext(nextAction);
+            // Skip the repeated transition hook check on UPDATE_LOCATION.
+            nextStep = (nextNext, nextAction) => nextNext(nextAction);
 
-              return next(action);
-            },
-          );
-
-        case ActionTypes.UPDATE_LOCATION:
+            return next(action);
+          });
+        case ActionTypes.UPDATE_LOCATION: {
           // No transition hooks to run.
-          if (!transitionHooks.length) {
+          if (!hooks.length) {
             return next(action);
           }
 
@@ -91,43 +94,71 @@ export default function createTransitionHookMiddleware() {
 
           // Without delta, we can't restore the location.
           if (payload.delta == null) {
-            return shouldAllowTransition(
-              transitionHooks,
-              payload,
-              allowTransition => (allowTransition ? next(action) : null),
-            );
+            return runAllowTransition(hooks, payload, allowTransition => (
+              allowTransition ? next(action) : null
+            ));
           }
 
-          // This step handles the rewind. It needs to run after the rewind so
-          // the window location is on the original location while prompting.
-          nextStep = () => shouldAllowTransition(
-            transitionHooks,
-            payload,
-            (allowTransition) => {
-              if (!allowTransition) {
-                return null;
-              }
+          const finishRunAllowTransition = (result) => {
+            if (!maybeConfirm(result)) {
+              return null;
+            }
 
-              // Release the original UPDATE_LOCATION when the un-rewind
-              // happens. We need to do so here to maintain the invariant that
-              // the store location only updates after the window location.
-              nextStep = () => next(action);
+            // Release the original UPDATE_LOCATION when the un-rewind
+            // happens. We need to do so here to maintain the invariant that
+            // the store location only updates after the window location.
+            nextStep = () => next(action);
 
-              dispatch(Actions.go(payload.delta));
+            dispatch(Actions.go(payload.delta));
+            return undefined;
+          };
+
+          let sync = true;
+          let rewindDone = false;
+
+          const syncResult = runHooks(hooks, payload, (result) => {
+            if (sync) {
+              return result;
+            }
+
+            if (!rewindDone) {
+              // The rewind hasn't finished yet. Replace the next step hook so
+              // we finish running when that happens.
+              nextStep = () => finishRunAllowTransition(result);
               return undefined;
-            },
-          );
+            }
 
-          // TODO: Don't rewind if the transition is synchronously allowed.
+            return finishRunAllowTransition(result);
+          });
+
+          sync = false;
+
+          switch (syncResult) {
+            case true:
+              // The transition was synchronously allowed, so skip the rewind.
+              return next(action);
+            case false:
+              // We're done as soon as the rewind finishes.
+              nextStep = () => {};
+              break;
+            case undefined:
+              // Let the callback from runHooks take care of things.
+              nextStep = () => { rewindDone = true; };
+              break;
+            default:
+              // Show the confirm dialog after the rewind.
+              nextStep = () => finishRunAllowTransition(syncResult);
+          }
+
           dispatch(Actions.go(-payload.delta));
           return undefined;
-
+        }
         default:
           return next(action);
       }
     };
   }
 
-  transitionHookMiddleware.addTransitionHook = addTransitionHook;
+  transitionHookMiddleware.addHook = addHook;
   return transitionHookMiddleware;
 }
