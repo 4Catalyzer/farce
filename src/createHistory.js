@@ -5,12 +5,12 @@ import createHistoryEnhancer from './createHistoryEnhancer';
 import createStoreHistory from './createStoreHistory';
 import locationReducer from './locationReducer';
 
-export default function createHistory(protocol, middlewares) {
+export default function createHistory(protocol, middlewares, options) {
   const store = createStore(
     combineReducers({
       location: locationReducer,
     }),
-    createHistoryEnhancer(protocol, middlewares),
+    createHistoryEnhancer(protocol, middlewares, options),
   );
 
   store.dispatch(Actions.init());
