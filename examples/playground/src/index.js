@@ -3,16 +3,16 @@ import BrowserProtocol from 'farce/lib/BrowserProtocol';
 import createHistoryEnhancer from 'farce/lib/createHistoryEnhancer';
 import locationReducer from 'farce/lib/locationReducer';
 import queryMiddleware from 'farce/lib/queryMiddleware';
-import { combineReducers, createStore } from 'redux';
+import { bindActionCreators, combineReducers, createStore } from 'redux';
 
 const store = createStore(
     combineReducers({
       location: locationReducer,
     }),
-    createHistoryEnhancer(
-      new BrowserProtocol(),
-      [queryMiddleware],
-    ),
+    createHistoryEnhancer({
+      protocol: new BrowserProtocol(),
+      middlewares: [queryMiddleware],
+    }),
 );
 
 store.subscribe(() => {
@@ -23,3 +23,4 @@ store.dispatch(FarceActions.init());
 
 global.store = store;
 global.FarceActions = FarceActions;
+global.BoundFarceActions = bindActionCreators(FarceActions, store.dispatch);
