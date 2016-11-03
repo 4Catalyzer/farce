@@ -1,3 +1,5 @@
+import off from 'dom-helpers/events/off';
+import on from 'dom-helpers/events/on';
 import isPromise from 'is-promise';
 
 import Actions from './Actions';
@@ -12,15 +14,15 @@ function resolveMaybePromise(maybePromise, callback) {
   return callback(maybePromise);
 }
 
-function shouldAllowTransition(transitionHooks, location, callback) {
-  if (!transitionHooks.length) {
+function runHooks(hooks, location, callback) {
+  if (!hooks.length) {
     return callback(true);
   }
 
-  return resolveMaybePromise(transitionHooks[0](location), (result) => {
+  return resolveMaybePromise(hooks[0](location), (result) => {
     if (result == null) {
-      return shouldAllowTransition(
-        transitionHooks.slice(1),
+      return runHooks(
+        hooks.slice(1),
         location,
         (nextResult) => {
           callback(nextResult);
@@ -28,27 +30,39 @@ function shouldAllowTransition(transitionHooks, location, callback) {
       );
     }
 
-    if (typeof result === 'boolean') {
-      return callback(result);
-    }
-
-    return callback(window.confirm(result)); // eslint-disable-line no-alert
+    return callback(result);
   });
 }
 
-export default function createTransitionHookMiddleware() {
-  let nextStep = null;
-  let transitionHooks = [];
+function maybeConfirm(result) {
+  if (typeof result === 'boolean') {
+    return result;
+  }
 
-  function addTransitionHook(transitionHook) {
-    transitionHooks.push(transitionHook);
+  return window.confirm(result); // eslint-disable-line no-alert
+}
+
+function runAllowTransition(hooks, location, callback) {
+  return runHooks(hooks, location, result => (
+    callback(maybeConfirm(result))
+  ));
+}
+
+export default function createTransitionHookMiddleware({
+  useBeforeUnload = false,
+}) {
+  let nextStep = null;
+  let hooks = [];
+
+  function addHook(hook) {
+    hooks.push(hook);
 
     return () => {
-      transitionHooks = transitionHooks.filter(
-        item => item !== transitionHook
-      );
+      hooks = hooks.filter(item => item !== hook);
     };
   }
+
+  let onBeforeUnload = null;
 
   function transitionHookMiddleware({ dispatch }) {
     return next => (action) => {
@@ -61,25 +75,46 @@ export default function createTransitionHookMiddleware() {
       }
 
       switch (type) {
-        case ActionTypes.TRANSITION:
-          return shouldAllowTransition(
-            transitionHooks,
-            payload,
-            (allowTransition) => {
-              if (!allowTransition) {
-                return null;
+        case ActionTypes.INIT:
+          // Only attach this listener once.
+          if (useBeforeUnload && !onBeforeUnload) {
+            onBeforeUnload = (event) => {
+              const syncResult = runHooks(hooks, null, result => result);
+
+              if (syncResult === true || syncResult === undefined) {
+                // An asynchronous transition hook usually means there will be
+                // a custom confirm dialog. However, we'll already be showing
+                // the before unload dialog, and there's no way to prevent the
+                // custom dialog from showing. In such cases, the application
+                // code will need to explicitly handle the null location
+                // anyway, so don't potentially show two confirmation dialogs.
+                return undefined;
               }
 
-              // Skip the repeated transition hook check on UPDATE_LOCATION.
-              nextStep = (nextNext, nextAction) => nextNext(nextAction);
+              const resultSafe = syncResult || '';
 
-              return next(action);
-            },
-          );
+              event.returnValue = resultSafe; // eslint-disable-line no-param-reassign
+              return resultSafe;
+            };
 
-        case ActionTypes.UPDATE_LOCATION:
+            on(window, 'beforeunload', onBeforeUnload);
+          }
+
+          return next(action);
+        case ActionTypes.TRANSITION:
+          return runAllowTransition(hooks, payload, (allowTransition) => {
+            if (!allowTransition) {
+              return null;
+            }
+
+            // Skip the repeated transition hook check on UPDATE_LOCATION.
+            nextStep = (nextNext, nextAction) => nextNext(nextAction);
+
+            return next(action);
+          });
+        case ActionTypes.UPDATE_LOCATION: {
           // No transition hooks to run.
-          if (!transitionHooks.length) {
+          if (!hooks.length) {
             return next(action);
           }
 
@@ -91,43 +126,78 @@ export default function createTransitionHookMiddleware() {
 
           // Without delta, we can't restore the location.
           if (payload.delta == null) {
-            return shouldAllowTransition(
-              transitionHooks,
-              payload,
-              allowTransition => (allowTransition ? next(action) : null),
-            );
+            return runAllowTransition(hooks, payload, allowTransition => (
+              allowTransition ? next(action) : null
+            ));
           }
 
-          // This step handles the rewind. It needs to run after the rewind so
-          // the window location is on the original location while prompting.
-          nextStep = () => shouldAllowTransition(
-            transitionHooks,
-            payload,
-            (allowTransition) => {
-              if (!allowTransition) {
-                return null;
-              }
+          const finishRunAllowTransition = (result) => {
+            if (!maybeConfirm(result)) {
+              return null;
+            }
 
-              // Release the original UPDATE_LOCATION when the un-rewind
-              // happens. We need to do so here to maintain the invariant that
-              // the store location only updates after the window location.
-              nextStep = () => next(action);
+            // Release the original UPDATE_LOCATION when the un-rewind
+            // happens. We need to do so here to maintain the invariant that
+            // the store location only updates after the window location.
+            nextStep = () => next(action);
 
-              dispatch(Actions.go(payload.delta));
+            dispatch(Actions.go(payload.delta));
+            return undefined;
+          };
+
+          let sync = true;
+          let rewindDone = false;
+
+          const syncResult = runHooks(hooks, payload, (result) => {
+            if (sync) {
+              return result;
+            }
+
+            if (!rewindDone) {
+              // The rewind hasn't finished yet. Replace the next step hook so
+              // we finish running when that happens.
+              nextStep = () => finishRunAllowTransition(result);
               return undefined;
-            },
-          );
+            }
 
-          // TODO: Don't rewind if the transition is synchronously allowed.
+            return finishRunAllowTransition(result);
+          });
+
+          sync = false;
+
+          switch (syncResult) {
+            case true:
+              // The transition was synchronously allowed, so skip the rewind.
+              return next(action);
+            case false:
+              // We're done as soon as the rewind finishes.
+              nextStep = () => {};
+              break;
+            case undefined:
+              // Let the callback from runHooks take care of things.
+              nextStep = () => { rewindDone = true; };
+              break;
+            default:
+              // Show the confirm dialog after the rewind.
+              nextStep = () => finishRunAllowTransition(syncResult);
+          }
+
           dispatch(Actions.go(-payload.delta));
           return undefined;
+        }
+        case ActionTypes.DISPOSE:
+          if (onBeforeUnload) {
+            off(window, 'beforeunload', onBeforeUnload);
+            onBeforeUnload = null;
+          }
 
+          return next(action);
         default:
           return next(action);
       }
     };
   }
 
-  transitionHookMiddleware.addTransitionHook = addTransitionHook;
+  transitionHookMiddleware.addHook = addHook;
   return transitionHookMiddleware;
 }
