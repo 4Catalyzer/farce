@@ -1,3 +1,5 @@
+import off from 'dom-helpers/events/off';
+import on from 'dom-helpers/events/on';
 import isPromise from 'is-promise';
 
 import Actions from './Actions';
@@ -46,7 +48,9 @@ function runAllowTransition(hooks, location, callback) {
   ));
 }
 
-export default function createTransitionHookMiddleware() {
+export default function createTransitionHookMiddleware({
+  useBeforeUnload = false,
+}) {
   let nextStep = null;
   let hooks = [];
 
@@ -57,6 +61,8 @@ export default function createTransitionHookMiddleware() {
       hooks = hooks.filter(item => item !== hook);
     };
   }
+
+  let onBeforeUnload = null;
 
   function transitionHookMiddleware({ dispatch }) {
     return next => (action) => {
@@ -69,6 +75,32 @@ export default function createTransitionHookMiddleware() {
       }
 
       switch (type) {
+        case ActionTypes.INIT:
+          // Only attach this listener once.
+          if (useBeforeUnload && !onBeforeUnload) {
+            onBeforeUnload = (event) => {
+              const syncResult = runHooks(hooks, null, result => result);
+
+              if (syncResult === true || syncResult === undefined) {
+                // An asynchronous transition hook usually means there will be
+                // a custom confirm dialog. However, we'll already be showing
+                // the before unload dialog, and there's no way to prevent the
+                // custom dialog from showing. In such cases, the application
+                // code will need to explicitly handle the null location
+                // anyway, so don't potentially show two confirmation dialogs.
+                return undefined;
+              }
+
+              const resultSafe = syncResult || '';
+
+              event.returnValue = resultSafe; // eslint-disable-line no-param-reassign
+              return resultSafe;
+            };
+
+            on(window, 'beforeunload', onBeforeUnload);
+          }
+
+          return next(action);
         case ActionTypes.TRANSITION:
           return runAllowTransition(hooks, payload, (allowTransition) => {
             if (!allowTransition) {
@@ -153,6 +185,13 @@ export default function createTransitionHookMiddleware() {
           dispatch(Actions.go(-payload.delta));
           return undefined;
         }
+        case ActionTypes.DISPOSE:
+          if (onBeforeUnload) {
+            off(window, 'beforeunload', onBeforeUnload);
+            onBeforeUnload = null;
+          }
+
+          return next(action);
         default:
           return next(action);
       }

@@ -19,10 +19,16 @@ function createLocation(location) {
   };
 }
 
-export default function createHistoryEnhancer(protocol, middlewares = []) {
+export default function createHistoryEnhancer(
+  protocol,
+  middlewares = [],
+  { useBeforeUnload } = {},
+) {
   return function historyEnhancer(createStore) {
     return (...args) => {
-      const transitionHookMiddleware = createTransitionHookMiddleware();
+      const transitionHookMiddleware = createTransitionHookMiddleware({
+        useBeforeUnload,
+      });
 
       const middlewareEnhancer = applyMiddleware(
         ensureLocationMiddleware,
