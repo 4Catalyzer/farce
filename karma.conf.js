@@ -10,7 +10,7 @@ module.exports = (config) => {
     files: ['test/index.js'],
 
     preprocessors: {
-      'test/index.js': ['webpack'],
+      'test/index.js': ['webpack', 'sourcemap'],
     },
 
     webpack: {
