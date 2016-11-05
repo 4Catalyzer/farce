@@ -46,6 +46,9 @@ export default class BrowserProtocol {
       listener(this.init());
     };
 
+    // TODO: On most versions of IE, we need a hashChange listener for hash-
+    // only changes.
+
     on(window, 'popstate', onPopState);
     return () => off(window, 'popstate', onPopState);
   }
@@ -56,7 +59,7 @@ export default class BrowserProtocol {
     const push = action === 'PUSH';
     invariant(
       push || action === 'REPLACE',
-      `unrecognized browser protocol action ${action}`,
+      `Unrecognized browser protocol action ${action}.`,
     );
 
     const delta = push ? 1 : 0;
