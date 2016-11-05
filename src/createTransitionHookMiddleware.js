@@ -19,19 +19,11 @@ function runHooks(hooks, location, callback) {
     return callback(true);
   }
 
-  return resolveMaybePromise(hooks[0](location), (result) => {
-    if (result == null) {
-      return runHooks(
-        hooks.slice(1),
-        location,
-        (nextResult) => {
-          callback(nextResult);
-        },
-      );
-    }
-
-    return callback(result);
-  });
+  return resolveMaybePromise(hooks[0](location), result => (
+    result != null ?
+      callback(result) :
+      runHooks(hooks.slice(1), location, callback)
+  ));
 }
 
 function maybeConfirm(result) {
