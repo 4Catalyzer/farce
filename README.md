@@ -1,6 +1,6 @@
 # farce [![npm][npm-badge]][npm]
 
-History repeats itself.
+_History repeats itself._
 
 farce provides a [Redux](http://redux.js.org/) store enhancer that wraps a series of middlewares to allow controlling browser navigation by dispatching actions and to allow managing location state with the rest of your store state.
 
