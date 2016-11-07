@@ -125,10 +125,10 @@ The `locationReducer` reducer updates the store state with a location object. Lo
 - `pathname`: the path name; as on `window.location`
 - `search`: the search string; as on `window.location`
 - `hash`: the location hash; as on `window.location`
-- `key`: If present, a unique key identifying the current history entry
-- `index`: The current index of the history entry, starting at 0 for the initial entry; this increments on `FarceActions.push` but not on `FarceActions.replace`
-- `delta`: The difference between the current `index` and the `index` of the previous location
-- `state`: Additional location state that is not part of the URL
+- `key`: if present, a unique key identifying the current history entry
+- `index`: the current index of the history entry, starting at 0 for the initial entry; this increments on `FarceActions.push` but not on `FarceActions.replace`
+- `delta`: the difference between the current `index` and the `index` of the previous location
+- `state`: additional location state that is not part of the URL
 
 If a `basename` is provided to `BrowserProtocol`, `pathname` will be relative to that `basename`. If `queryMiddleware` is applied, the location object will also contain a `query` property that is the parsed query object from the search string.
 
