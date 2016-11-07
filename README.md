@@ -203,7 +203,7 @@ function transitionHook(location) {
   if (location === null) {
     return false;
   }
-  
+
   return asyncConfirm(location);
 }
 ```
