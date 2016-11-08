@@ -1,10 +1,10 @@
-# farce [![npm][npm-badge]][npm]
+# Farce [![npm][npm-badge]][npm]
 
 _History repeats itself._
 
-farce provides a [Redux](http://redux.js.org/) store enhancer that wraps a series of middlewares to allow controlling browser navigation by dispatching actions and to allow managing location state with the rest of your store state.
+Farce provides a [Redux](http://redux.js.org/) store enhancer that wraps a series of middlewares to allow controlling browser navigation by dispatching actions and to allow managing location state with the rest of your store state.
 
-farce can also create a history object that is compatible with [history](https://github.com/mjackson/history) v2 for use with [React Router](https://github.com/ReactTraining/react-router) v2.
+Farce can also create a history object that is compatible with [history](https://github.com/mjackson/history) v2 for use with [React Router](https://github.com/ReactTraining/react-router) v2.
 
 ## Usage
 
@@ -237,6 +237,20 @@ const value3 = stateStorage.read(location, 'bar');
 Call `createStoreHistory` on a store enhanced with `createHistoryEnhancer` to create a history object that is API-compatible with `history` v2. This object has an additional `dispose` method for tearing down event listeners.
 
 If you don't have a store, `createHistory` will create a history object. It takes the same configuration options as `createHistoryEnhancer`.
+
+### Minimizing bundle size
+
+The top-level `farce` package exports everything available in this library. It is unlikely that any single application will use all the features available. As such, for real applications, you should import the modules you need from `farce/lib` directly, to pull in only the code that you use.
+
+```js
+import BrowserProtocol from 'farce/lib/BrowserProtocol';
+import createHistoryEnhancer from 'farce/lib/createHistoryEnhancer';
+import queryMiddleware from 'farce/lib/queryMiddleware';
+
+// Instead of:
+// import { BrowserProtocol, createHistoryEnhancer, queryMiddleware }
+//   from 'farce';
+```
 
 [npm-badge]: https://img.shields.io/npm/v/farce.svg
 [npm]: https://www.npmjs.org/package/farce
