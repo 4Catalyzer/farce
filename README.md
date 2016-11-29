@@ -90,11 +90,10 @@ store.dispatch(FarceActions.dispose());
 
 #### `BrowserProtocol`
 
-The `BrowserProtocol` class uses the HTML5 History API. It takes an optional configuration object. This configuration object supports a `basename` property; if specified, all paths will be implicitly prepended by `basename`.
+The `BrowserProtocol` class uses the HTML5 History API.
 
 ```js
-const protocol = new BrowserProtocol({ basename: '/foo' });
-// Dispatching FarceActions.push('/bar') will navigate to /foo/bar.
+const protocol = new BrowserProtocol();
 ```
 
 The examples here assume the use of a `new BrowserProtocol()`.
@@ -117,6 +116,16 @@ const customQueryMiddleware = createQueryMiddleware({
 
 The examples here assume the use of `queryMiddleware`.
 
+#### `createBasenameMiddleware`
+
+The `createBasenameMiddleware` middleware factory creates a middleware that implicitly prepends all paths with a base path. It takes a configuration object with a `basename` string.
+
+```js
+// With this middleware, dispatching FarceActions.push('/bar') will navigate to
+// /foo/bar:
+const basenameMiddleware = createBasenameMiddleware({ basename: '/foo' });
+```
+
 ### Locations and location descriptors
 
 The `locationReducer` reducer updates the store state with a location object. Location objects have the following properties:
@@ -130,7 +139,7 @@ The `locationReducer` reducer updates the store state with a location object. Lo
 - `delta`: the difference between the current `index` and the `index` of the previous location
 - `state`: additional location state that is not part of the URL
 
-If a `basename` is provided to `BrowserProtocol`, `pathname` will be relative to that `basename`. If `queryMiddleware` is applied, the location object will also contain a `query` property that is the parsed query object from the search string.
+If a `queryMiddleware` is applied, the location object will also contain a `query` property that is the parsed query object from the search string. If a `basenameMiddleware` is applied, `pathname` will be relative to the specified `basename`.
 
 `FarceActions.push` and `FarceActions.replace` take a location descriptor. A location descriptor can be an object with the shape of the location object. If it is an object, the `action`, `key`, `index`, and `delta` keys are ignored. A location descriptor can also be a string with the full path.
 

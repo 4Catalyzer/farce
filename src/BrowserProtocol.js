@@ -5,10 +5,7 @@ import invariant from 'invariant';
 import createPath from './utils/createPath';
 
 export default class BrowserProtocol {
-  constructor({ basename = '' } = {}) {
-    this.basename = basename.slice(-1) === '/' ?
-      basename.slice(0, -1) : basename;
-
+  constructor() {
     this.keyPrefix = Math.random().toString(36).slice(2, 8);
     this.keyIndex = 0;
 
@@ -18,20 +15,13 @@ export default class BrowserProtocol {
   init() {
     const { pathname, search, hash } = window.location;
 
-    let relativePathname;
-    if (pathname.indexOf(this.basename) === 0) {
-      relativePathname = pathname.slice(this.basename.length);
-    } else {
-      relativePathname = null;
-    }
-
     const { key, index = 0, state } = window.history.state || {};
     const delta = this.index != null ? index - this.index : 0;
     this.index = index;
 
     return {
       action: 'POP',
-      pathname: relativePathname,
+      pathname,
       search,
       hash,
       key,
@@ -66,7 +56,7 @@ export default class BrowserProtocol {
     const extraState = this.createExtraState(delta);
 
     const browserState = { state, ...extraState };
-    const path = `${this.basename}${createPath(location)}`;
+    const path = createPath(location);
 
     if (push) {
       window.history.pushState(browserState, null, path);
