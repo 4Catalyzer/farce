@@ -12,4 +12,5 @@ export createTransitionHookMiddleware from './createTransitionHookMiddleware';
 export ensureLocationMiddleware from './ensureLocationMiddleware';
 export locationReducer from './locationReducer';
 export queryMiddleware from './queryMiddleware';
+export ServerProtocol from './ServerProtocol';
 export StateStorage from './StateStorage';

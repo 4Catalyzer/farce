@@ -90,13 +90,22 @@ store.dispatch(FarceActions.dispose());
 
 #### `BrowserProtocol`
 
-The `BrowserProtocol` class uses the HTML5 History API.
+`BrowserProtocol` uses the browser URL path and the HTML5 History API.
 
 ```js
 const protocol = new BrowserProtocol();
 ```
 
 The examples here assume the use of a `new BrowserProtocol()`.
+
+#### `ServerProtocol`
+
+`ServerProtocol` uses a fixed, in-memory location for use in server-side rendering. It takes the path for the location to use. `ServerProtocol` instances do not support `location.state` and cannot navigate.
+
+```js
+// Given a standard Node request object:
+const protocol = new ServerProtocol(req.url);
+```
 
 ### Middlewares
 
