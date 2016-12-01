@@ -1,6 +1,8 @@
 import createPath from './utils/createPath';
 import ensureLocation from './utils/ensureLocation';
 
+function noop() {}
+
 export default class ServerProtocol {
   constructor(url) {
     this.location = ensureLocation(url);
@@ -15,6 +17,7 @@ export default class ServerProtocol {
 
   subscribe() {
     // Server protocol emits no events.
+    return noop;
   }
 
   createHref(location) {
