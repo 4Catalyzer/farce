@@ -1,4 +1,4 @@
-# Farce [![npm][npm-badge]][npm]
+# Farce [![Travis][build-badge]][build] [![npm][npm-badge]][npm]
 
 _History repeats itself._
 
@@ -269,6 +269,9 @@ import queryMiddleware from 'farce/lib/queryMiddleware';
 // import { BrowserProtocol, createHistoryEnhancer, queryMiddleware }
 //   from 'farce';
 ```
+
+[build-badge]: https://img.shields.io/travis/4Catalyzer/farce/master.svg
+[build]: https://travis-ci.org/4Catalyzer/farce
 
 [npm-badge]: https://img.shields.io/npm/v/farce.svg
 [npm]: https://www.npmjs.org/package/farce
