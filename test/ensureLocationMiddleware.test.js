@@ -1,5 +1,3 @@
-import sinon from 'sinon';
-
 import ActionTypes from '../src/ActionTypes';
 import ensureLocationMiddleware from '../src/ensureLocationMiddleware';
 
