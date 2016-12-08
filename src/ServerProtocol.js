@@ -5,13 +5,13 @@ function noop() {}
 
 export default class ServerProtocol {
   constructor(url) {
-    this.location = ensureLocation(url);
+    this._location = ensureLocation(url);
   }
 
   init() {
     return {
       action: 'POP',
-      ...this.location,
+      ...this._location,
     };
   }
 

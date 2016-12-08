@@ -2,5 +2,8 @@
   "extends": "4catalyzer",
   "env": {
     "browser": true
+  },
+  "rules": {
+    "no-underscore-dangle": "off"
   }
 }

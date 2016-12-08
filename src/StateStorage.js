@@ -1,11 +1,11 @@
 export default class StateStorage {
   constructor(farce, namespace) {
-    this.getFallbackLocationKey = farce.createHref;
-    this.stateKeyPrefix = `${namespace}|`;
+    this._getFallbackLocationKey = farce.createHref;
+    this._stateKeyPrefix = `${namespace}|`;
   }
 
   read(location, key) {
-    const stateKey = this.getStateKey(location, key);
+    const stateKey = this._getStateKey(location, key);
 
     try {
       // We want to catch JSON parse errors in case someone separately threw
@@ -18,7 +18,7 @@ export default class StateStorage {
   }
 
   save(location, key, value) {
-    const stateKey = this.getStateKey(location, key);
+    const stateKey = this._getStateKey(location, key);
 
     if (value === undefined) {
       try {
@@ -42,9 +42,9 @@ export default class StateStorage {
     }
   }
 
-  getStateKey(location, key) {
-    const locationKey = location.key || this.getFallbackLocationKey(location);
-    const stateKeyBase = `${this.stateKeyPrefix}${locationKey}`;
+  _getStateKey(location, key) {
+    const locationKey = location.key || this._getFallbackLocationKey(location);
+    const stateKeyBase = `${this._stateKeyPrefix}${locationKey}`;
     return key == null ? stateKeyBase : `${stateKeyBase}|${key}`;
   }
 }

@@ -6,18 +6,18 @@ import createPath from './utils/createPath';
 
 export default class BrowserProtocol {
   constructor() {
-    this.keyPrefix = Math.random().toString(36).slice(2, 8);
-    this.keyIndex = 0;
+    this._keyPrefix = Math.random().toString(36).slice(2, 8);
+    this._keyIndex = 0;
 
-    this.index = null;
+    this._index = null;
   }
 
   init() {
     const { pathname, search, hash } = window.location;
 
     const { key, index = 0, state } = window.history.state || {};
-    const delta = this.index != null ? index - this.index : 0;
-    this.index = index;
+    const delta = this._index != null ? index - this._index : 0;
+    this._index = index;
 
     return {
       action: 'POP',
@@ -53,7 +53,7 @@ export default class BrowserProtocol {
     );
 
     const delta = push ? 1 : 0;
-    const extraState = this.createExtraState(delta);
+    const extraState = this._createExtraState(delta);
 
     const browserState = { state, ...extraState };
     const path = createPath(location);
@@ -75,13 +75,13 @@ export default class BrowserProtocol {
     return createPath(location);
   }
 
-  createExtraState(delta) {
-    const keyIndex = this.keyIndex++;
-    this.index += delta;
+  _createExtraState(delta) {
+    const keyIndex = this._keyIndex++;
+    this._index += delta;
 
     return {
-      key: `${this.keyPrefix}:${keyIndex.toString(36)}`,
-      index: this.index,
+      key: `${this._keyPrefix}:${keyIndex.toString(36)}`,
+      index: this._index,
     };
   }
 }
