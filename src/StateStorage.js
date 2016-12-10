@@ -8,9 +8,14 @@ export default class StateStorage {
     const stateKey = this._getStateKey(location, key);
 
     try {
+      const value = window.sessionStorage.getItem(stateKey);
+      if (value == null) { // === null is probably sufficient.
+        return undefined;
+      }
+
       // We want to catch JSON parse errors in case someone separately threw
-      // junk into sessionStorage.
-      return JSON.parse(window.sessionStorage.getItem(stateKey));
+      // junk into sessionStorage under our namespace.
+      return JSON.parse(value);
     } catch (e) {
       // Pretend that the entry doesn't exist.
       return undefined;
