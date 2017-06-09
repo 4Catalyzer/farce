@@ -1,7 +1,7 @@
 import ServerProtocol from '../src/ServerProtocol';
 
 describe('ServerProtocol', () => {
-  it('should create initial location when init be called', () => {
+  it('should create initial location when init is called', () => {
     const protocol = new ServerProtocol('/foo?bar=baz#qux');
     expect(protocol.init()).to.eql({
       action: 'POP',
@@ -11,13 +11,13 @@ describe('ServerProtocol', () => {
     });
   });
 
-  it('should not throw when unsubscribe be called', () => {
+  it('should not throw when unsubscribe is called', () => {
     const protocol = new ServerProtocol('/foo?bar=baz#qux');
     const unsubscribe = protocol.subscribe();
     expect(unsubscribe).to.not.throw();
   });
 
-  it('should create link when createHref be called with location', () => {
+  it('should create href when createHref is called with location', () => {
     const protocol = new ServerProtocol('/foo?bar=baz#qux');
     expect(protocol.createHref({
       pathname: '/foo',
