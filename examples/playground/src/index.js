@@ -6,13 +6,13 @@ import queryMiddleware from 'farce/lib/queryMiddleware';
 import { bindActionCreators, combineReducers, createStore } from 'redux';
 
 const store = createStore(
-    combineReducers({
-      location: locationReducer,
-    }),
-    createHistoryEnhancer({
-      protocol: new BrowserProtocol(),
-      middlewares: [queryMiddleware],
-    }),
+  combineReducers({
+    location: locationReducer,
+  }),
+  createHistoryEnhancer({
+    protocol: new BrowserProtocol(),
+    middlewares: [queryMiddleware],
+  }),
 );
 
 store.subscribe(() => {

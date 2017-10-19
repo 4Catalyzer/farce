@@ -1,5 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-const webpack = require('webpack');
+const webpack = require('webpack'); // eslint-disable-line import/no-extraneous-dependencies
 
 module.exports = (config) => {
   const { env } = process;
@@ -15,8 +14,8 @@ module.exports = (config) => {
 
     webpack: {
       module: {
-        loaders: [
-          { test: /\.js$/, exclude: /node_modules/, loader: 'babel' },
+        rules: [
+          { test: /\.js$/, exclude: /node_modules/, use: 'babel-loader' },
         ],
       },
       plugins: [
