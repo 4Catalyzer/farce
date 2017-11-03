@@ -3,10 +3,10 @@ import createLocationMiddleware from './createLocationMiddleware';
 export default function createBasenameMiddleware({ basename }) {
   if (!basename || basename === '/') {
     // Fast path in case basename is trivial.
-    return next => next;
+    return () => next => next;
   }
 
-  // Normalize away trailing slashes on basename.
+  // Normalize away trailing slash on basename.
   const pathnamePrefix = basename.slice(-1) === '/' ?
     basename.slice(0, -1) : basename;
 
