@@ -5,5 +5,11 @@
     }],
     "stage-1"
   ],
-  "plugins": ["dev-expression", "add-module-exports"]
+  "plugins": ["dev-expression", "add-module-exports"],
+
+  "env": {
+    "test": {
+      "plugins": ["istanbul"]
+    }
+  }
 }

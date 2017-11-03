@@ -31,10 +31,15 @@ module.exports = (config) => {
       noInfo: true,
     },
 
-    reporters: ['mocha'],
+    reporters: ['mocha', 'coverage'],
 
     mochaReporter: {
       output: 'autowatch',
+    },
+
+    coverageReporter: {
+      type: 'lcov',
+      dir: 'coverage',
     },
 
     customLaunchers: {
