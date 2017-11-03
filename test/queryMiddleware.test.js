@@ -6,35 +6,35 @@ describe('queryMiddleware', () => {
   describe('makeLocationDescriptor', () => {
     it('should create a search string', () => {
       expect(invokeMakeLocationDescriptor(queryMiddleware, {
-        path: '/path',
+        pathname: '/path',
         query: {
           foo: 'bar',
         },
       })).to.include({
-        path: '/path',
+        pathname: '/path',
         search: '?foo=bar',
       });
     });
 
     it('should not modify the search string without a query', () => {
       expect(invokeMakeLocationDescriptor(queryMiddleware, {
-        path: '/path',
+        pathname: '/path',
         search: '?foo',
       })).to.include({
-        path: '/path',
+        pathname: '/path',
         search: '?foo',
       });
     });
 
     it('should replace the existing search string', () => {
       expect(invokeMakeLocationDescriptor(queryMiddleware, {
-        path: '/path',
+        pathname: '/path',
         query: {
           foo: 'bar',
         },
         search: '?baz',
       })).to.include({
-        path: '/path',
+        pathname: '/path',
         search: '?foo=bar',
       });
     });
@@ -43,10 +43,10 @@ describe('queryMiddleware', () => {
   describe('makeLocation', () => {
     it('should create a search string', () => {
       expect(invokeMakeLocation(queryMiddleware, {
-        path: '/path',
+        pathname: '/path',
         search: '?foo=bar',
       })).to.deep.include({
-        path: '/path',
+        pathname: '/path',
         query: {
           foo: 'bar',
         },
@@ -55,14 +55,14 @@ describe('queryMiddleware', () => {
 
     it('should preserve the supplied query', () => {
       expect(invokeMakeLocation(queryMiddleware, {
-        path: '/path',
+        pathname: '/path',
         query: {
           foo: 'bar',
           baz: undefined,
         },
         search: '?foo=bar',
       })).to.deep.include({
-        path: '/path',
+        pathname: '/path',
         query: {
           foo: 'bar',
           baz: undefined,
@@ -72,10 +72,10 @@ describe('queryMiddleware', () => {
 
     it('should handle malformed search strings', () => {
       expect(invokeMakeLocation(queryMiddleware, {
-        path: '/path',
+        pathname: '/path',
         search: '?%%7C',
       })).to.deep.include({
-        path: '/path',
+        pathname: '/path',
         query: {
           '%|': null,
         },
