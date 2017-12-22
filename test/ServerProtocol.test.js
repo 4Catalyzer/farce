@@ -19,10 +19,12 @@ describe('ServerProtocol', () => {
 
   it('should create href when createHref is called with location', () => {
     const protocol = new ServerProtocol('/foo?bar=baz#qux');
-    expect(protocol.createHref({
-      pathname: '/foo',
-      search: '?bar=baz',
-      hash: '#qux',
-    })).to.equal('/foo?bar=baz#qux');
+    expect(
+      protocol.createHref({
+        pathname: '/foo',
+        search: '?bar=baz',
+        hash: '#qux',
+      }),
+    ).to.equal('/foo?bar=baz#qux');
   });
 });

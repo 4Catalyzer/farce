@@ -11,11 +11,12 @@ describe('createLocationMiddleware', () => {
     makeLocationDescriptor = sinon.stub();
     makeLocation = sinon.stub();
     dispatch = createLocationMiddleware({
-      makeLocationDescriptor, makeLocation,
+      makeLocationDescriptor,
+      makeLocation,
     })()(next);
   });
 
-  it('should transform payload of TRANSITION action with makeLocationDescriptor', () => { // eslint-disable-line max-len
+  it('should transform payload of TRANSITION action with makeLocationDescriptor', () => {
     const descriptor = {
       pathname: '/path',
       search: '?bar=baz',
@@ -35,7 +36,8 @@ describe('createLocationMiddleware', () => {
     });
   });
 
-  it('should transform payload of CREATE_HREF action with makeLocationDescriptor', () => { // eslint-disable-line max-len
+  // eslint-disable-next-line max-len
+  it('should transform payload of CREATE_HREF action with makeLocationDescriptor', () => {
     const descriptor = {
       pathname: '/path',
       search: '?bar=baz',
@@ -55,11 +57,10 @@ describe('createLocationMiddleware', () => {
     });
   });
 
-  xit('should test CREATE_LOCATION action', () => {
+  xit('should test CREATE_LOCATION action', () => {});
 
-  });
-
-  it('should transform payload of UPDATE_LOCATION action with makeLocation', () => { // eslint-disable-line max-len
+  it('should transform payload of UPDATE_LOCATION action with makeLocation', () => {
+    // eslint-disable-line max-len
     const location = {
       action: 'PUSH',
       delta: 1,

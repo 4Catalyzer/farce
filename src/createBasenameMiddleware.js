@@ -7,8 +7,8 @@ export default function createBasenameMiddleware({ basename }) {
   }
 
   // Normalize away trailing slash on basename.
-  const pathnamePrefix = basename.slice(-1) === '/' ?
-    basename.slice(0, -1) : basename;
+  const pathnamePrefix =
+    basename.slice(-1) === '/' ? basename.slice(0, -1) : basename;
 
   return createLocationMiddleware({
     makeLocationDescriptor: location => ({
@@ -17,8 +17,10 @@ export default function createBasenameMiddleware({ basename }) {
     }),
     makeLocation: location => ({
       ...location,
-      pathname: location.pathname.indexOf(pathnamePrefix) === 0 ?
-        location.pathname.slice(pathnamePrefix.length) : null,
+      pathname:
+        location.pathname.indexOf(pathnamePrefix) === 0
+          ? location.pathname.slice(pathnamePrefix.length)
+          : null,
     }),
   });
 }

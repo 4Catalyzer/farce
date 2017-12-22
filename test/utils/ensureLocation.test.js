@@ -2,21 +2,26 @@ import ensureLocation from '../../src/utils/ensureLocation';
 
 describe('ensureLocation', () => {
   it('should return same shape if pathname, search, hash are defined', () => {
-    expect(ensureLocation({
-      pathname: '/foo',
-      search: '?bar=baz',
-      hash: '#qux',
-    })).to.eql({
+    expect(
+      ensureLocation({
+        pathname: '/foo',
+        search: '?bar=baz',
+        hash: '#qux',
+      }),
+    ).to.eql({
       pathname: '/foo',
       search: '?bar=baz',
       hash: '#qux',
     });
   });
 
-  it('should create location with default search, hash if they doesn\'t exist', () => { // eslint-disable-line max-len
-    expect(ensureLocation({
-      pathname: '/new/pathname',
-    })).to.eql({
+  // eslint-disable-next-line max-len
+  it("should create location with default search, hash if they doesn't exist", () => {
+    expect(
+      ensureLocation({
+        pathname: '/new/pathname',
+      }),
+    ).to.eql({
       pathname: '/new/pathname',
       search: '',
       hash: '',
