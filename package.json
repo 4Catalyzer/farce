@@ -10,6 +10,7 @@
     "build": "rimraf lib && babel src -d lib",
     "format": "prettier --write '{examples/*/src,src,test}/**/*.js' *.js",
     "lint": "eslint examples/*/src src test *.js",
+    "precommit": "lint-staged",
     "prepublish": "npm run build",
     "tdd": "cross-env NODE_ENV=test karma start",
     "test": "npm run lint && npm run testonly",
