@@ -32,12 +32,9 @@ export default class MemoryProtocol {
         window.sessionStorage.getItem(STATE_KEY),
       );
 
-      // Checking instanceof Array is okay because we make the array.
-      if (
-        stack instanceof Array &&
-        typeof index === 'number' &&
-        stack[index]
-      ) {
+      // Check that the stack and index at least seem reasonable before using
+      // them as state. This isn't foolproof, but it might prevent mistakes.
+      if (Array.isArray(stack) && typeof index === 'number' && stack[index]) {
         return { stack, index };
       }
     } catch (e) {} // eslint-disable-line no-empty
