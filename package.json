@@ -8,7 +8,6 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "rimraf lib && babel src -d lib",
-    "format": "prettier --write '{examples/*/src,src,test}/**/*.js' *.js",
     "lint": "eslint examples/*/src src test *.js",
     "precommit": "lint-staged",
     "prepublish": "npm run build",
@@ -18,8 +17,7 @@
   },
   "lint-staged": {
     "*.js": [
-      "prettier --write",
-      "eslint",
+      "eslint --fix",
       "git add"
     ]
   },
@@ -67,6 +65,7 @@
     "eslint-config-4catalyzer": "^0.3.3",
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-prettier": "^2.4.0",
     "husky": "^0.14.3",
     "karma": "^2.0.0",
     "karma-chrome-launcher": "^2.2.0",
