@@ -14,11 +14,13 @@ describe('Actions', () => {
       payload: '/foo?bar=baz#qux',
     });
 
-    expect(Actions.push({
-      pathname: '/foo',
-      search: '?bar=baz',
-      hash: '#qux',
-    })).to.eql({
+    expect(
+      Actions.push({
+        pathname: '/foo',
+        search: '?bar=baz',
+        hash: '#qux',
+      }),
+    ).to.eql({
       type: ActionTypes.PUSH,
       payload: {
         pathname: '/foo',
@@ -34,11 +36,13 @@ describe('Actions', () => {
       payload: '/foo?bar=baz#qux',
     });
 
-    expect(Actions.replace({
-      pathname: '/foo',
-      search: '?bar=baz',
-      hash: '#qux',
-    })).to.eql({
+    expect(
+      Actions.replace({
+        pathname: '/foo',
+        search: '?bar=baz',
+        hash: '#qux',
+      }),
+    ).to.eql({
       type: ActionTypes.REPLACE,
       payload: {
         pathname: '/foo',

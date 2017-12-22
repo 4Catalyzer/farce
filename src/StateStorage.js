@@ -9,7 +9,8 @@ export default class StateStorage {
 
     try {
       const value = window.sessionStorage.getItem(stateKey);
-      if (value == null) { // === null is probably sufficient.
+      // === null is probably sufficient.
+      if (value == null) {
         return undefined;
       }
 

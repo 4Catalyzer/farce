@@ -1,9 +1,9 @@
 {
-  "extends": "4catalyzer",
+  "extends": [
+    "4catalyzer",
+    "prettier"
+  ],
   "env": {
     "browser": true
-  },
-  "rules": {
-    "no-underscore-dangle": "off"
   }
 }

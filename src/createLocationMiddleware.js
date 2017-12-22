@@ -1,10 +1,11 @@
 import ActionTypes from './ActionTypes';
 
 export default function createLocationMiddleware({
-  makeLocationDescriptor, makeLocation,
+  makeLocationDescriptor,
+  makeLocation,
 }) {
   return function locationMiddleware() {
-    return next => (action) => {
+    return next => action => {
       const { type, payload } = action;
 
       switch (type) {

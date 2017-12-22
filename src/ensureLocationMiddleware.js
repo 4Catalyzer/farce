@@ -2,7 +2,7 @@ import ActionTypes from './ActionTypes';
 import ensureLocation from './utils/ensureLocation';
 
 export default function ensureLocationMiddleware() {
-  return next => (action) => {
+  return next => action => {
     const { type, payload } = action;
 
     switch (type) {

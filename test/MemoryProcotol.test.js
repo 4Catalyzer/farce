@@ -49,16 +49,22 @@ describe('MemoryProtocol', () => {
     protocol.go(+1);
 
     expect(spy).to.have.been.calledTwice();
-    expect(spy.getCall(0).args[0]).to.have.property('pathname').equal('/foo');
-    expect(spy.getCall(1).args[0]).to.have.property('pathname').equal('/quz');
+    expect(spy.getCall(0).args[0])
+      .to.have.property('pathname')
+      .equal('/foo');
+    expect(spy.getCall(1).args[0])
+      .to.have.property('pathname')
+      .equal('/quz');
   });
 
   it('should create href when createHref is called with location', () => {
     const protocol = new MemoryProtocol();
-    expect(protocol.createHref({
-      pathname: '/foo',
-      search: '?bar=baz',
-      hash: '#qux',
-    })).to.equal('/foo?bar=baz#qux');
+    expect(
+      protocol.createHref({
+        pathname: '/foo',
+        search: '?bar=baz',
+        hash: '#qux',
+      }),
+    ).to.equal('/foo?bar=baz#qux');
   });
 });

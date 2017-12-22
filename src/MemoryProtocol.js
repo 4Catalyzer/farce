@@ -30,7 +30,7 @@ const sessionHistory = {
 };
 
 export default class MemoryProtocol {
-  static _history = sessionHistory
+  static _history = sessionHistory;
 
   constructor(initialLocation) {
     sessionHistory.init(initialLocation);
@@ -56,7 +56,9 @@ export default class MemoryProtocol {
     this.index += push ? 1 : 0;
 
     sessionHistory[push ? 'put' : 'replace'](this.index, {
-      pathname, search, hash,
+      pathname,
+      search,
+      hash,
     });
 
     return location;
@@ -80,6 +82,8 @@ export default class MemoryProtocol {
 
   subscribe(listener) {
     this.listener = listener;
-    return () => { this.listener = noop; };
+    return () => {
+      this.listener = noop;
+    };
   }
 }
