@@ -9,7 +9,7 @@ export default function maybePromisify(hook, syncLength) {
 
     let resolvePromise;
 
-    hook(...args, (result) => {
+    hook(...args, result => {
       if (resolvePromise) {
         resolvePromise(result);
         return;
@@ -20,7 +20,7 @@ export default function maybePromisify(hook, syncLength) {
     });
 
     if (!hasSyncResult) {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         resolvePromise = resolve;
       });
     }

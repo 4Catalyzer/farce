@@ -41,7 +41,8 @@ export default function createHistoryEnhancer({
 
       const store = middlewareEnhancer(createStore)(...args);
       const boundActionCreators = bindActionCreators(
-        { createHref, createLocation }, store.dispatch,
+        { createHref, createLocation },
+        store.dispatch,
       );
 
       return {

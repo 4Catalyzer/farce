@@ -19,11 +19,13 @@ function runHooks(hooks, location, callback) {
     return callback(true);
   }
 
-  return resolveMaybePromise(hooks[0](location), result => (
-    result != null ?
-      callback(result) :
-      runHooks(hooks.slice(1), location, callback)
-  ));
+  return resolveMaybePromise(
+    hooks[0](location),
+    result =>
+      result != null
+        ? callback(result)
+        : runHooks(hooks.slice(1), location, callback),
+  );
 }
 
 function maybeConfirm(result) {
@@ -35,9 +37,7 @@ function maybeConfirm(result) {
 }
 
 function runAllowTransition(hooks, location, callback) {
-  return runHooks(hooks, location, result => (
-    callback(maybeConfirm(result))
-  ));
+  return runHooks(hooks, location, result => callback(maybeConfirm(result)));
 }
 
 export default function createTransitionHookMiddleware({
@@ -57,7 +57,7 @@ export default function createTransitionHookMiddleware({
   let onBeforeUnload = null;
 
   function transitionHookMiddleware({ dispatch }) {
-    return next => (action) => {
+    return next => action => {
       const { type, payload } = action;
 
       if (nextStep && type === ActionTypes.UPDATE_LOCATION) {
@@ -70,7 +70,7 @@ export default function createTransitionHookMiddleware({
         case ActionTypes.INIT:
           // Only attach this listener once.
           if (useBeforeUnload && !onBeforeUnload) {
-            onBeforeUnload = (event) => {
+            onBeforeUnload = event => {
               const syncResult = runHooks(hooks, null, result => result);
 
               if (syncResult === true || syncResult === undefined) {
@@ -94,7 +94,7 @@ export default function createTransitionHookMiddleware({
 
           return next(action);
         case ActionTypes.TRANSITION:
-          return runAllowTransition(hooks, payload, (allowTransition) => {
+          return runAllowTransition(hooks, payload, allowTransition => {
             if (!allowTransition) {
               return null;
             }
@@ -118,12 +118,14 @@ export default function createTransitionHookMiddleware({
 
           // Without delta, we can't restore the location.
           if (payload.delta == null) {
-            return runAllowTransition(hooks, payload, allowTransition => (
-              allowTransition ? next(action) : null
-            ));
+            return runAllowTransition(
+              hooks,
+              payload,
+              allowTransition => (allowTransition ? next(action) : null),
+            );
           }
 
-          const finishRunAllowTransition = (result) => {
+          const finishRunAllowTransition = result => {
             if (!maybeConfirm(result)) {
               return null;
             }
@@ -140,7 +142,7 @@ export default function createTransitionHookMiddleware({
           let sync = true;
           let rewindDone = false;
 
-          const syncResult = runHooks(hooks, payload, (result) => {
+          const syncResult = runHooks(hooks, payload, result => {
             if (sync) {
               return result;
             }
@@ -167,7 +169,9 @@ export default function createTransitionHookMiddleware({
               break;
             case undefined:
               // Let the callback from runHooks take care of things.
-              nextStep = () => { rewindDone = true; };
+              nextStep = () => {
+                rewindDone = true;
+              };
               break;
             default:
               // Show the confirm dialog after the rewind.
