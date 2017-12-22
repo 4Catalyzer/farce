@@ -107,6 +107,20 @@ The examples here assume the use of a `new BrowserProtocol()`.
 const protocol = new ServerProtocol(req.url);
 ```
 
+#### `MemoryProtocol`
+
+`MemoryProtocol` tracks the current location and the location history in memory. It is intended for use in tests exercising navigation, and in cases where actual browser navigation is not possible or not desired, such as in browser plugins and in Electron apps. `MemoryProtocol` requires an initial location.
+
+```js
+const protocol = new MemoryProtocol(initialLocation);
+```
+
+`MemoryProtocol` also supports persisting the location history state to session storage, which allows for use cases like preserving navigation state when refreshing in an Electron app.
+
+```js
+const protocol = new MemoryProtocol(initialLocation, { persistent: true });
+```
+
 ### Middlewares
 
 #### `queryMiddleware` and `createQueryMiddleware`
