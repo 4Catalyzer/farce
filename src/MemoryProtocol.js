@@ -1,79 +1,118 @@
+import invariant from 'invariant';
+
 import createPath from './utils/createPath';
 import ensureLocation from './utils/ensureLocation';
 
-function noop() {}
-
-const STACK_KEY = '@@farce/memory-stack';
-const storage = window.sessionStorage;
-
-const sessionHistory = {
-  stack: null,
-  init(initialLocation = '/') {
-    this.stack = JSON.parse(storage.getItem(STACK_KEY) || 'null') || [
-      ensureLocation(initialLocation),
-    ];
-  },
-  last() {
-    return this.stack[this.stack.length - 1];
-  },
-
-  put(idx, frame) {
-    this.stack.length = idx;
-    this.stack[idx] = frame;
-    storage.setItem(STACK_KEY, JSON.stringify(this.stack));
-  },
-
-  replace(idx, frame) {
-    this.stack[idx] = frame;
-    storage.setItem(STACK_KEY, JSON.stringify(this.stack));
-  },
-};
+const STATE_KEY = '@@farce/state';
 
 export default class MemoryProtocol {
-  static _history = sessionHistory;
+  constructor(initialLocation, { persistent = false } = {}) {
+    this._persistent = persistent;
 
-  constructor(initialLocation) {
-    sessionHistory.init(initialLocation);
-    this.index = null;
+    const initialState = persistent ? this._loadState() : null;
+    if (initialState) {
+      this._stack = initialState.stack;
+      this._index = initialState.index;
+    } else {
+      this._stack = [ensureLocation(initialLocation)];
+      this._index = 0;
+    }
+
+    this._keyPrefix = Math.random()
+      .toString(36)
+      .slice(2, 8);
+    this._keyIndex = 0;
+
+    this._listener = null;
   }
 
-  init() {
-    const index = sessionHistory.stack.length - 1;
-    const location = sessionHistory.stack[index];
+  _loadState() {
+    try {
+      const { stack, index } = JSON.parse(
+        window.sessionStorage.getItem(STATE_KEY),
+      );
 
-    this.index = index;
+      // Checking instanceof Array is okay because we make the array.
+      if (
+        stack instanceof Array &&
+        typeof index === 'number' &&
+        stack[index]
+      ) {
+        return { stack, index };
+      }
+    } catch (e) {} // eslint-disable-line no-empty
 
+    return null;
+  }
+
+  init(delta = 0) {
     return {
-      ...location,
+      ...this._stack[this._index],
       action: 'POP',
+      index: this._index,
+      delta,
     };
   }
 
   transition(location) {
-    const { action, pathname, search, hash } = location;
+    // Match BrowserProtocol here in only saving these fields.
+    const { action, pathname, search, hash, state } = location;
 
     const push = action === 'PUSH';
-    this.index += push ? 1 : 0;
+    invariant(
+      push || action === 'REPLACE',
+      `Unrecognized memory protocol action ${action}.`,
+    );
 
-    sessionHistory[push ? 'put' : 'replace'](this.index, {
-      pathname,
-      search,
-      hash,
-    });
+    const delta = push ? 1 : 0;
+    this._index += delta;
 
-    return location;
+    const keyIndex = this._keyIndex++;
+    const key = `${this._keyPrefix}:${keyIndex.toString(36)}`;
+
+    this._stack[this._index] = { pathname, search, hash, state, key };
+    if (push) {
+      this._stack.length = this._index + 1;
+    }
+
+    if (this._persistent) {
+      this._saveState();
+    }
+
+    return { ...location, key, index: this._index, delta };
   }
 
   go(delta) {
-    const nextIdx = Math.min(
-      Math.max(this.index + delta, 0),
-      sessionHistory.stack.length - 1,
-    );
-    if (nextIdx === this.index) return;
+    const prevIndex = this._index;
 
-    this.index = nextIdx;
-    const location = sessionHistory.stack[this.index];
-    if (this.listener) this.listener(location);
+    this._index = Math.min(
+      Math.max(this._index + delta, 0),
+      this._stack.length - 1,
+    );
+
+    if (this._index === prevIndex) {
+      return;
+    }
+
+    if (this._persistent) {
+      this._saveState();
+    }
+
+    if (this._listener) {
+      this._listener(this.init(this._index - prevIndex));
+    }
+  }
+
+  _saveState() {
+    try {
+      window.sessionStorage.setItem(
+        STATE_KEY,
+        JSON.stringify({
+          stack: this._stack,
+          index: this._index,
+        }),
+      );
+    } catch (e) {} // eslint-disable-line no-empty
   }
 
   createHref(location) {
@@ -81,9 +120,10 @@ export default class MemoryProtocol {
   }
 
   subscribe(listener) {
-    this.listener = listener;
+    this._listener = listener;
+
     return () => {
-      this.listener = noop;
+      this._listener = null;
     };
   }
 }
