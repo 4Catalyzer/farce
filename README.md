@@ -280,8 +280,11 @@ import createHistoryEnhancer from 'farce/lib/createHistoryEnhancer';
 import queryMiddleware from 'farce/lib/queryMiddleware';
 
 // Instead of:
-// import { BrowserProtocol, createHistoryEnhancer, queryMiddleware }
-//   from 'farce';
+// import {
+//  BrowserProtocol,
+//  createHistoryEnhancer,
+//  queryMiddleware,
+// } from 'farce';
 ```
 
 [build-badge]: https://img.shields.io/travis/4Catalyzer/farce/master.svg
