@@ -1,7 +1,7 @@
 import ensureLocation from '../../src/utils/ensureLocation';
 
 describe('ensureLocation', () => {
-  it('should return same shape if pathname, search, hash are defined', () => {
+  it('should preserve fully-defined location descriptor objects', () => {
     expect(
       ensureLocation({
         pathname: '/foo',
@@ -15,8 +15,7 @@ describe('ensureLocation', () => {
     });
   });
 
-  // eslint-disable-next-line max-len
-  it("should create location with default search, hash if they doesn't exist", () => {
+  it('should add default search and hash', () => {
     expect(
       ensureLocation({
         pathname: '/new/pathname',
@@ -28,7 +27,7 @@ describe('ensureLocation', () => {
     });
   });
 
-  it('should parse pathname, search, hash correctly', () => {
+  it('should parse full path strings', () => {
     expect(ensureLocation('/foo')).to.eql({
       pathname: '/foo',
       search: '',
