@@ -1,7 +1,7 @@
 import MemoryProtocol from '../src/MemoryProtocol';
 
-describe.only('MemoryProtocol', () => {
-  it('should parse the initial loocation', () => {
+describe('MemoryProtocol', () => {
+  it('should parse the initial location', () => {
     const protocol = new MemoryProtocol('/foo?bar=baz#qux');
 
     expect(protocol.init()).to.eql({
@@ -25,6 +25,7 @@ describe.only('MemoryProtocol', () => {
       pathname: '/bar',
       state: { the: 'state' },
     });
+
     expect(barLocation).to.deep.include({
       action: 'PUSH',
       pathname: '/bar',
