@@ -2,103 +2,67 @@ import ActionTypes from '../src/ActionTypes';
 import createLocationMiddleware from '../src/createLocationMiddleware';
 
 describe('createLocationMiddleware', () => {
-  let next;
-  let makeLocationDescriptor;
-  let makeLocation;
-  let dispatch;
-  beforeEach(() => {
-    next = sinon.spy();
-    makeLocationDescriptor = sinon.stub();
-    makeLocation = sinon.stub();
-    dispatch = createLocationMiddleware({
-      makeLocationDescriptor,
-      makeLocation,
-    })()(next);
+  const middleware = createLocationMiddleware({
+    makeLocationDescriptor: descriptor => ({ descriptor }),
+    makeLocation: location => ({ location }),
   });
 
-  it('should transform payload of TRANSITION action with makeLocationDescriptor', () => {
-    const descriptor = {
-      pathname: '/path',
-      search: '?bar=baz',
-      hash: '#qux',
-    };
+  const dispatch = middleware()(action => action.payload);
 
-    makeLocationDescriptor.returns(descriptor);
-
-    dispatch({
-      type: ActionTypes.TRANSITION,
-      payload: {},
-    });
-
-    expect(next).to.be.calledWith({
-      type: ActionTypes.TRANSITION,
-      payload: descriptor,
+  it('should handle location descriptors for TRANSITION', () => {
+    expect(
+      dispatch({
+        type: ActionTypes.TRANSITION,
+        payload: {},
+      }),
+    ).to.eql({
+      descriptor: {},
     });
   });
 
-  // eslint-disable-next-line max-len
-  it('should transform payload of CREATE_HREF action with makeLocationDescriptor', () => {
-    const descriptor = {
-      pathname: '/path',
-      search: '?bar=baz',
-      hash: '#qux',
-    };
-
-    makeLocationDescriptor.returns(descriptor);
-
-    dispatch({
-      type: ActionTypes.CREATE_HREF,
-      payload: {},
-    });
-
-    expect(next).to.be.calledWith({
-      type: ActionTypes.CREATE_HREF,
-      payload: descriptor,
+  it('should handle location descriptors for CREATE_HREF', () => {
+    expect(
+      dispatch({
+        type: ActionTypes.CREATE_HREF,
+        payload: {},
+      }),
+    ).to.eql({
+      descriptor: {},
     });
   });
 
-  xit('should test CREATE_LOCATION action', () => {});
-
-  it('should transform payload of UPDATE_LOCATION action with makeLocation', () => {
-    // eslint-disable-line max-len
-    const location = {
-      action: 'PUSH',
-      delta: 1,
-      hash: '',
-      index: 5,
-      key: 'h0j8qq:4',
-      pathname: '/new/path',
-      query: {},
-      search: '',
-    };
-
-    makeLocation.returns(location);
-
-    dispatch({
-      type: ActionTypes.UPDATE_LOCATION,
-      payload: {},
-    });
-
-    expect(next).to.be.calledWith({
-      type: ActionTypes.UPDATE_LOCATION,
-      payload: location,
-    });
-  });
-
-  it('should not affect other action', () => {
-    const UNKNOWN = 'UNKNOWN';
-    dispatch({
-      type: UNKNOWN,
-      payload: {
-        pathname: '/foo?bar=baz#qux',
+  it('should create locations for CREATE_LOCATION', () => {
+    expect(
+      dispatch({
+        type: ActionTypes.CREATE_LOCATION,
+        payload: {},
+      }),
+    ).to.eql({
+      location: {
+        descriptor: {},
       },
     });
+  });
 
-    expect(next).to.be.calledWith({
-      type: UNKNOWN,
-      payload: {
-        pathname: '/foo?bar=baz#qux',
-      },
+  it('should handle locations for UPDATE_LOCATION', () => {
+    expect(
+      dispatch({
+        type: ActionTypes.UPDATE_LOCATION,
+        payload: {},
+      }),
+    ).to.eql({
+      location: {},
+    });
+  });
+
+  it('should ignore other actions', () => {
+    expect(
+      dispatch({
+        type: 'UNKNOWN',
+        payload: { unknown: {} },
+      }),
+    ).to.eql({
+      unknown: {},
     });
   });
 });
