@@ -100,6 +100,14 @@ const protocol = new BrowserProtocol();
 
 The examples here assume the use of a `new BrowserProtocol()`.
 
+#### `HashProtocol`
+
+`HashProtocol` uses the URL hash for navigation, and is intended for use in cases where server-side routing is not available, or in legacy environments where the HTML5 History API is not available. Prefer using `BrowserProtocol` over `HashProtocol` when possible.
+
+```js
+const protocol = new HashProtocol();
+```
+
 #### `ServerProtocol`
 
 `ServerProtocol` uses a fixed, in-memory location for use in server-side rendering. It takes the path for the location to use. `ServerProtocol` instances do not support `location.state` and cannot navigate.
