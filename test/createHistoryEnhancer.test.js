@@ -20,7 +20,7 @@ describe('createHistoryMiddleware', () => {
     store.dispatch(Actions.dispose());
   });
 
-  it('should support pushing and popping', () => {
+  it('should support push and go', () => {
     store.dispatch(Actions.push('/bar'));
     expect(store.getState()).to.include({
       pathname: '/bar',
@@ -40,7 +40,7 @@ describe('createHistoryMiddleware', () => {
     });
   });
 
-  it('should support replacing', () => {
+  it('should support replace', () => {
     store.dispatch(Actions.replace('/bar'));
     expect(store.getState()).to.include({
       pathname: '/bar',
@@ -48,7 +48,7 @@ describe('createHistoryMiddleware', () => {
     });
   });
 
-  it('should create href', () => {
+  it('should support createHref', () => {
     expect(
       store.farce.createHref({
         pathname: '/foo',
@@ -58,7 +58,7 @@ describe('createHistoryMiddleware', () => {
     ).to.equal('/foo?bar#baz');
   });
 
-  it('should create location', () => {
+  it('should support createLocation', () => {
     expect(
       store.farce.createLocation({
         pathname: '/foo',

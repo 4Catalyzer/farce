@@ -22,7 +22,7 @@ export default function createStoreHistory(
     },
 
     listenBefore(hook) {
-      return store.farce.addHook(maybePromisify(hook, 1));
+      return store.farce.addTransitionHook(maybePromisify(hook, 1));
     },
 
     push(location) {
