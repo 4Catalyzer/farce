@@ -341,6 +341,8 @@ describe('createTransitionHookMiddleware', () => {
       expect(store.getState().pathname).to.equal('/bar');
 
       resolveHook(true);
+      await timeout(10);
+
       resolveListener();
       await timeout(10);
 
