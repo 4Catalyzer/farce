@@ -44,7 +44,8 @@
     "invariant": "^2.2.2",
     "is-promise": "^2.1.0",
     "query-string": "^5.0.1",
-    "redux": "^3.7.2"
+    "redux": "^3.7.2",
+    "warning": "^3.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

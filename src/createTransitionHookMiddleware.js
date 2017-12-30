@@ -1,17 +1,18 @@
 import off from 'dom-helpers/events/off';
 import on from 'dom-helpers/events/on';
 import isPromise from 'is-promise';
+import warning from 'warning';
 
 import Actions from './Actions';
 import ActionTypes from './ActionTypes';
 
-function resolveMaybePromise(maybePromise, callback) {
-  if (isPromise(maybePromise)) {
-    maybePromise.then(callback);
+function resolveValueOrPromise(valueOrPromise, callback) {
+  if (isPromise(valueOrPromise)) {
+    valueOrPromise.then(callback);
     return undefined;
   }
 
-  return callback(maybePromise);
+  return callback(valueOrPromise);
 }
 
 function runHooks(hooks, location, callback) {
@@ -19,8 +20,22 @@ function runHooks(hooks, location, callback) {
     return callback(true);
   }
 
-  return resolveMaybePromise(
-    hooks[0](location),
+  let resultOrResultPromise;
+  try {
+    resultOrResultPromise = hooks[0](location);
+  } catch (e) {
+    warning(
+      false,
+      'Ignoring transition hook `%s` that failed with `%s`.',
+      hooks[0].name,
+      e,
+    );
+
+    resultOrResultPromise = null;
+  }
+
+  return resolveValueOrPromise(
+    resultOrResultPromise,
     result =>
       result != null
         ? callback(result)
@@ -70,6 +85,7 @@ export default function createTransitionHookMiddleware({
         case ActionTypes.INIT:
           // Only attach this listener once.
           if (useBeforeUnload && !onBeforeUnload) {
+            /* istanbul ignore next: not testable with Karma */
             onBeforeUnload = event => {
               const syncResult = runHooks(hooks, null, result => result);
 
