@@ -1,5 +1,9 @@
 import ActionTypes from '../src/ActionTypes';
 
+export function shouldWarn(about) {
+  console.error.expected.push(about); // eslint-disable-line no-console
+}
+
 export function invokeLocationMiddleware(middleware, action) {
   let result;
 
