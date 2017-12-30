@@ -44,6 +44,18 @@ describe('queryMiddleware', () => {
         search: '?foo=bar',
       });
     });
+
+    it('should create empty search for empty query', () => {
+      expect(
+        invokeMakeLocationDescriptor(queryMiddleware, {
+          pathname: '/path',
+          query: {},
+        }),
+      ).to.include({
+        pathname: '/path',
+        search: '',
+      });
+    });
   });
 
   describe('makeLocation', () => {
@@ -91,6 +103,18 @@ describe('queryMiddleware', () => {
         query: {
           '%|': null,
         },
+      });
+    });
+
+    it('should handle broken search strings', () => {
+      expect(
+        invokeMakeLocation(queryMiddleware, {
+          pathname: '/path',
+          search: null,
+        }),
+      ).to.include({
+        pathname: '/path',
+        query: null,
       });
     });
   });

@@ -4,7 +4,9 @@ _History repeats itself._
 
 Farce provides a [Redux](http://redux.js.org/) store enhancer that wraps a series of middlewares to allow controlling browser navigation by dispatching actions and to allow managing location state with the rest of your store state.
 
-Farce can also create a history object that is compatible with [history](https://github.com/mjackson/history) v2 for use with [React Router](https://github.com/ReactTraining/react-router) v2.
+Farce can also create a history object that is compatible with [history](https://github.com/ReactTraining/history) v2 for use with [React Router](https://github.com/ReactTraining/react-router) v2.
+
+[![Codecov][codecov-badge]][codecov]
 
 ## Usage
 
@@ -292,3 +294,6 @@ import queryMiddleware from 'farce/lib/queryMiddleware';
 
 [npm-badge]: https://img.shields.io/npm/v/farce.svg
 [npm]: https://www.npmjs.org/package/farce
+
+[codecov-badge]: https://img.shields.io/codecov/c/github/4Catalyzer/farce/master.svg
+[codecov]: https://codecov.io/gh/4Catalyzer/farce
