@@ -1,46 +1,41 @@
 import StateStorage from '../src/StateStorage';
 
 describe('StateStorage', () => {
-  const farce = {
-    createHref: () => 'path?q=1#foo',
-  };
+  let stateStorage;
 
   const location = {
-    action: 'PUSH',
-    delta: 1,
-    hash: '',
-    index: 5,
-    key: 'h0j8qq:4',
-    pathname: '/new/path',
-    query: {},
-    search: '',
+    key: 'location:0',
   };
 
-  it('should retrieve saved value when key is not provided', () => {
-    const stateStorage = new StateStorage(farce, 'my-transient-state');
+  beforeEach(() => {
+    window.sessionStorage.clear();
 
-    stateStorage.save(location, null, 1);
-
-    expect(stateStorage.read(location)).to.equal(1);
+    stateStorage = new StateStorage(
+      { createHref: () => '/path?search' },
+      'test',
+    );
   });
 
-  it('should retrieve saved value when key is provided', () => {
-    const stateStorage = new StateStorage(farce, 'my-transient-state');
+  it('should read saved value for default key', () => {
+    stateStorage.save(location, null, 1);
 
+    expect(stateStorage.read(location, null)).to.equal(1);
+    expect(stateStorage.read(location, 'foo')).to.be.undefined();
+  });
+
+  it('should read saved value for explicit key', () => {
     stateStorage.save(location, 'foo', [2, 3]);
 
     expect(stateStorage.read(location, 'foo')).to.eql([2, 3]);
+    expect(stateStorage.read(location, null)).to.be.undefined();
   });
 
-  it('should retrieve undefined when value is missing', () => {
-    const stateStorage = new StateStorage(farce, 'my-transient-state');
-
-    expect(stateStorage.read(location, 'bar')).to.be.undefined();
+  it('should read undefined when value is missing', () => {
+    expect(stateStorage.read(location, null)).to.be.undefined();
+    expect(stateStorage.read(location, 'foo')).to.be.undefined();
   });
 
-  it('should work with types', () => {
-    const stateStorage = new StateStorage(farce, 'my-transient-state');
-
+  it('should work with arbitrary types', () => {
     stateStorage.save(location, 'number', 1);
     stateStorage.save(location, 'boolean', true);
     stateStorage.save(location, 'string', 'state');
@@ -48,11 +43,31 @@ describe('StateStorage', () => {
     stateStorage.save(location, 'object', { a: 1 });
     stateStorage.save(location, 'null', null);
 
-    expect(stateStorage.read(location, 'number')).to.eql(1);
-    expect(stateStorage.read(location, 'boolean')).to.eql(true);
-    expect(stateStorage.read(location, 'string')).to.eql('state');
+    expect(stateStorage.read(location, 'number')).to.equal(1);
+    expect(stateStorage.read(location, 'boolean')).to.equal(true);
+    expect(stateStorage.read(location, 'string')).to.equal('state');
     expect(stateStorage.read(location, 'array')).to.eql([2, 3]);
     expect(stateStorage.read(location, 'object')).to.eql({ a: 1 });
-    expect(stateStorage.read(location, 'null')).to.eql(null);
+    expect(stateStorage.read(location, 'null')).to.be.null();
+  });
+
+  it('should support deleting values', () => {
+    stateStorage.save(location, null, 1);
+    expect(stateStorage.read(location, null)).to.equal(1);
+
+    stateStorage.save(location, null, undefined);
+    expect(stateStorage.read(location, null)).to.be.undefined();
+  });
+
+  it('should read undefined for invalid JSON', () => {
+    window.sessionStorage.setItem('test|location:0', '[}');
+
+    expect(stateStorage.read(location, null)).to.be.undefined();
+  });
+
+  it('should support fallback key', () => {
+    stateStorage.save({}, null, 1);
+
+    expect(stateStorage.read({}, null)).to.equal(1);
   });
 });
