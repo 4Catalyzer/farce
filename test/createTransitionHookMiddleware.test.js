@@ -82,7 +82,7 @@ describe('createTransitionHookMiddleware', () => {
       expect(hook2).not.to.have.been.called();
     });
 
-    it('should ignore and warn on hooks that throw', () => {
+    it('should warn on and ignore hooks that throw', () => {
       shouldWarn('Ignoring transition hook `` that failed with `Error: foo`.');
 
       store.farce.addTransitionHook(() => {
@@ -119,7 +119,7 @@ describe('createTransitionHookMiddleware', () => {
         .and.to.have.been.called.with('/bar');
     });
 
-    it('should allow transition on delayed true', async () => {
+    it('should allow transition on async true', async () => {
       let resolveHook;
       store.farce.addTransitionHook(
         () =>
@@ -137,7 +137,7 @@ describe('createTransitionHookMiddleware', () => {
       expect(store.getState().pathname).to.equal('/bar');
     });
 
-    it('should block transition on delayed false', async () => {
+    it('should block transition on async false', async () => {
       let resolveHook;
       store.farce.addTransitionHook(
         () =>
@@ -155,7 +155,7 @@ describe('createTransitionHookMiddleware', () => {
       expect(store.getState().pathname).to.equal('/foo');
     });
 
-    it('should allow chaining delayed hooks', async () => {
+    it('should allow chaining async hooks', async () => {
       let resolveHook1;
       let resolveHook2;
 
@@ -181,6 +181,21 @@ describe('createTransitionHookMiddleware', () => {
       expect(store.getState().pathname).to.equal('/foo');
 
       resolveHook2(true);
+      await timeout(10);
+
+      expect(store.getState().pathname).to.equal('/bar');
+    });
+
+    it('should warn on and ignore async hooks that throw', async () => {
+      shouldWarn('Ignoring transition hook `` that failed with `Error: foo`.');
+
+      store.farce.addTransitionHook(async () => {
+        throw new Error('foo');
+      });
+
+      store.dispatch(Actions.push('/bar'));
+      expect(store.getState().pathname).to.equal('/foo');
+
       await timeout(10);
 
       expect(store.getState().pathname).to.equal('/bar');
@@ -225,7 +240,7 @@ describe('createTransitionHookMiddleware', () => {
       expect(store.getState().pathname).to.equal('/bar');
     });
 
-    it('should allow transition on delayed true', async () => {
+    it('should allow transition on async true', async () => {
       let resolveHook;
       store.farce.addTransitionHook(
         () =>
@@ -243,7 +258,7 @@ describe('createTransitionHookMiddleware', () => {
       expect(store.getState().pathname).to.equal('/foo');
     });
 
-    it('should block transition on delayed false', async () => {
+    it('should block transition on async false', async () => {
       let resolveHook;
       store.farce.addTransitionHook(
         () =>

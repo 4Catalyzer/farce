@@ -6,13 +6,39 @@ import warning from 'warning';
 import Actions from './Actions';
 import ActionTypes from './ActionTypes';
 
-function resolveValueOrPromise(valueOrPromise, callback) {
-  if (isPromise(valueOrPromise)) {
-    valueOrPromise.then(callback);
-    return undefined;
+function runHook(hook, location, callback) {
+  let result;
+  try {
+    result = hook(location);
+  } catch (e) {
+    warning(
+      false,
+      'Ignoring transition hook `%s` that failed with `%s`.',
+      hook.name,
+      e,
+    );
+
+    result = null;
   }
 
-  return callback(valueOrPromise);
+  if (!isPromise(result)) {
+    return callback(result);
+  }
+
+  result
+    .catch(e => {
+      warning(
+        false,
+        'Ignoring transition hook `%s` that failed with `%s`.',
+        hook.name,
+        e,
+      );
+
+      return null;
+    })
+    .then(callback);
+
+  return undefined;
 }
 
 function runHooks(hooks, location, callback) {
@@ -20,22 +46,9 @@ function runHooks(hooks, location, callback) {
     return callback(true);
   }
 
-  let resultOrResultPromise;
-  try {
-    resultOrResultPromise = hooks[0](location);
-  } catch (e) {
-    warning(
-      false,
-      'Ignoring transition hook `%s` that failed with `%s`.',
-      hooks[0].name,
-      e,
-    );
-
-    resultOrResultPromise = null;
-  }
-
-  return resolveValueOrPromise(
-    resultOrResultPromise,
+  return runHook(
+    hooks[0],
+    location,
     result =>
       result != null
         ? callback(result)
