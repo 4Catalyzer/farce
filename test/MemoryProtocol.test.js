@@ -176,26 +176,42 @@ describe('MemoryProtocol', () => {
     ).to.equal('/foo?bar=baz#qux');
   });
 
-  it('should support persistence', () => {
-    window.sessionStorage.clear();
-
-    const protocol1 = new MemoryProtocol('/foo', { persistent: true });
-    expect(protocol1.init()).to.include({
-      pathname: '/foo',
+  describe('persistence', () => {
+    beforeEach(() => {
+      window.sessionStorage.clear();
     });
 
-    protocol1.transition({ action: 'PUSH', pathname: '/bar' });
-    protocol1.transition({ action: 'PUSH', pathname: '/baz' });
-    protocol1.go(-1);
+    it('should support persistence', () => {
+      const protocol1 = new MemoryProtocol('/foo', { persistent: true });
+      expect(protocol1.init()).to.include({
+        pathname: '/foo',
+      });
 
-    const protocol2 = new MemoryProtocol('/foo', { persistent: true });
-    expect(protocol2.init()).to.include({
-      pathname: '/bar',
+      protocol1.transition({ action: 'PUSH', pathname: '/bar' });
+      protocol1.transition({ action: 'PUSH', pathname: '/baz' });
+      protocol1.go(-1);
+
+      const protocol2 = new MemoryProtocol('/foo', { persistent: true });
+      expect(protocol2.init()).to.include({
+        pathname: '/bar',
+      });
+
+      protocol2.go(+1);
+      expect(protocol2.init()).to.include({
+        pathname: '/baz',
+      });
     });
 
-    protocol2.go(+1);
-    expect(protocol2.init()).to.include({
-      pathname: '/baz',
+    it('should ignore broken session storage entry', () => {
+      sessionStorage.setItem(
+        '@@farce/state',
+        JSON.stringify({ stack: [], index: 2 }),
+      );
+
+      const protocol = new MemoryProtocol('/foo', { persistent: true });
+      expect(protocol.init()).to.include({
+        pathname: '/foo',
+      });
     });
   });
 });
