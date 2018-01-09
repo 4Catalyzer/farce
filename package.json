@@ -1,6 +1,6 @@
 {
   "name": "farce",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "History repeats itself",
   "files": [
     "lib"
