@@ -10,6 +10,7 @@ export createQueryMiddleware from './createQueryMiddleware';
 export createStoreHistory from './createStoreHistory';
 export createTransitionHookMiddleware from './createTransitionHookMiddleware';
 export ensureLocationMiddleware from './ensureLocationMiddleware';
+export HashProtocol from './HashProtocol';
 export locationReducer from './locationReducer';
 export MemoryProtocol from './MemoryProtocol';
 export queryMiddleware from './queryMiddleware';
