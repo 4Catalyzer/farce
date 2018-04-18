@@ -14,7 +14,7 @@ describe('createHistory', () => {
     listener = sinon.spy();
     unlisten = history.listen(listener);
 
-    listener.reset();
+    listener.resetHistory();
   });
 
   afterEach(() => {
@@ -30,7 +30,7 @@ describe('createHistory', () => {
       pathname: '/bar',
       index: 1,
     });
-    listener.reset();
+    listener.resetHistory();
 
     history.goBack();
 
@@ -39,7 +39,7 @@ describe('createHistory', () => {
       pathname: '/foo',
       index: 0,
     });
-    listener.reset();
+    listener.resetHistory();
 
     history.goForward();
 
@@ -48,7 +48,7 @@ describe('createHistory', () => {
       pathname: '/bar',
       index: 1,
     });
-    listener.reset();
+    listener.resetHistory();
 
     history.go(-1);
 
@@ -57,7 +57,7 @@ describe('createHistory', () => {
       pathname: '/foo',
       index: 0,
     });
-    listener.reset();
+    listener.resetHistory();
   });
 
   it('should support replace', () => {

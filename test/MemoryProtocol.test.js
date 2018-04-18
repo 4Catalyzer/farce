@@ -83,7 +83,7 @@ describe('MemoryProtocol', () => {
       action: 'POP',
       pathname: '/bar',
     });
-    listener.reset();
+    listener.resetHistory();
 
     unsubscribe();
 
@@ -108,7 +108,7 @@ describe('MemoryProtocol', () => {
       pathname: '/foo',
       delta: -2,
     });
-    listener.reset();
+    listener.resetHistory();
 
     protocol.go(-1);
 
@@ -122,7 +122,7 @@ describe('MemoryProtocol', () => {
       pathname: '/baz',
       delta: 2,
     });
-    listener.reset();
+    listener.resetHistory();
 
     protocol.go(+1);
 
