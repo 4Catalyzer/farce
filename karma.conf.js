@@ -13,6 +13,7 @@ module.exports = config => {
     },
 
     webpack: {
+      mode: 'development',
       module: {
         rules: [
           { test: /\.js$/, exclude: /node_modules/, use: 'babel-loader' },
@@ -24,7 +25,6 @@ module.exports = config => {
           __DEV__: true,
         }),
       ],
-      devtool: 'cheap-module-inline-source-map',
     },
 
     webpackMiddleware: {

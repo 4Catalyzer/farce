@@ -29,7 +29,7 @@ describe('createStoreHistory', () => {
     listener = sinon.spy();
     unlisten = history.listen(listener);
 
-    listener.reset();
+    listener.resetHistory();
   });
 
   afterEach(() => {
@@ -45,7 +45,7 @@ describe('createStoreHistory', () => {
       pathname: '/bar',
       index: 1,
     });
-    listener.reset();
+    listener.resetHistory();
 
     store.dispatch({
       type: 'UNKNOWN',

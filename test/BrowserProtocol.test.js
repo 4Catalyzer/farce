@@ -1,25 +1,22 @@
-import HashProtocol from '../src/HashProtocol';
+import BrowserProtocol from '../src/BrowserProtocol';
 
 import { timeout } from './helpers';
 
-describe('HashProtocol', () => {
+describe('BrowserProtocol', () => {
   beforeEach(() => {
     window.history.replaceState(null, null, '/');
   });
 
   it('should parse the initial location', () => {
-    window.history.replaceState(
-      null,
-      null,
-      '/pathname?search#/foo?bar=baz#qux',
-    );
-    const protocol = new HashProtocol();
+    window.history.replaceState(null, null, '/foo?bar=baz#qux');
+    const protocol = new BrowserProtocol();
 
     expect(protocol.init()).to.eql({
       action: 'POP',
       pathname: '/foo',
       search: '?bar=baz',
       hash: '#qux',
+      key: undefined,
       index: 0,
       delta: 0,
       state: undefined,
@@ -27,7 +24,8 @@ describe('HashProtocol', () => {
   });
 
   it('should support basic navigation', async () => {
-    const protocol = new HashProtocol();
+    window.history.replaceState(null, null, '/foo');
+    const protocol = new BrowserProtocol();
 
     const listener = sinon.spy();
     protocol.subscribe(listener);
@@ -40,7 +38,11 @@ describe('HashProtocol', () => {
       state: { the: 'state' },
     });
 
-    expect(window.location.hash).to.equal('#/bar?search#hash');
+    expect(window.location).to.include({
+      pathname: '/bar',
+      search: '?search',
+      hash: '#hash',
+    });
     expect(barLocation).to.deep.include({
       action: 'PUSH',
       pathname: '/bar',
@@ -50,6 +52,7 @@ describe('HashProtocol', () => {
       delta: 1,
       state: { the: 'state' },
     });
+    expect(barLocation.key).not.to.be.empty();
 
     expect(
       protocol.transition({
@@ -65,7 +68,7 @@ describe('HashProtocol', () => {
       delta: 1,
     });
 
-    expect(window.location.hash).to.equal('#/baz');
+    expect(window.location.pathname).to.equal('/baz');
 
     expect(
       protocol.transition({
@@ -82,47 +85,47 @@ describe('HashProtocol', () => {
     });
     await timeout(20);
 
-    expect(window.location.hash).to.equal('#/qux');
+    expect(window.location.pathname).to.equal('/qux');
     expect(listener).not.to.have.been.called();
-
-    if (window.navigator.userAgent.includes('Firefox')) {
-      // Firefox triggers a full page reload on hash pops.
-      return;
-    }
 
     protocol.go(-1);
     await timeout(20);
 
-    expect(window.location.hash).to.equal('#/bar?search#hash');
+    expect(window.location).to.include({
+      pathname: '/bar',
+      search: '?search',
+      hash: '#hash',
+    });
     expect(listener).to.have.been.calledOnce();
     expect(listener.firstCall.args[0]).to.deep.include({
       action: 'POP',
       pathname: '/bar',
       search: '?search',
       hash: '#hash',
+      key: barLocation.key,
       index: 1,
       delta: -1,
       state: { the: 'state' },
     });
-    listener.reset();
+    listener.resetHistory();
 
     window.history.back();
     await timeout(20);
 
-    expect(window.location.hash).to.be.empty();
+    expect(window.location.pathname).to.equal('/foo');
     expect(listener).to.have.been.calledOnce();
     expect(listener.firstCall.args[0]).to.deep.include({
       action: 'POP',
-      pathname: '/',
+      pathname: '/foo',
       index: 0,
       delta: -1,
       state: undefined,
     });
-    listener.reset();
+    listener.resetHistory();
   });
 
   it('should support subscribing and unsubscribing', async () => {
-    const protocol = new HashProtocol('/foo');
+    const protocol = new BrowserProtocol();
     protocol.transition({
       action: 'PUSH',
       pathname: '/bar',
@@ -139,11 +142,6 @@ describe('HashProtocol', () => {
     const listener = sinon.spy();
     const unsubscribe = protocol.subscribe(listener);
 
-    if (window.navigator.userAgent.includes('Firefox')) {
-      // Firefox triggers a full page reload on hash pops.
-      return;
-    }
-
     protocol.go(-1);
     await timeout(20);
 
@@ -152,7 +150,7 @@ describe('HashProtocol', () => {
       action: 'POP',
       pathname: '/bar',
     });
-    listener.reset();
+    listener.resetHistory();
 
     unsubscribe();
 
@@ -163,7 +161,7 @@ describe('HashProtocol', () => {
   });
 
   it('should support createHref', () => {
-    const protocol = new HashProtocol();
+    const protocol = new BrowserProtocol();
 
     expect(
       protocol.createHref({
@@ -171,6 +169,6 @@ describe('HashProtocol', () => {
         search: '?bar=baz',
         hash: '#qux',
       }),
-    ).to.equal('#/foo?bar=baz#qux');
+    ).to.equal('/foo?bar=baz#qux');
   });
 });
