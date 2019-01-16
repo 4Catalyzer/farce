@@ -51,7 +51,8 @@ export default class BrowserProtocol {
     const push = action === 'PUSH';
     invariant(
       push || action === 'REPLACE',
-      `Unrecognized browser protocol action ${action}.`,
+      `Unrecognized browser protocol action: %s.`,
+      action,
     );
 
     const delta = push ? 1 : 0;

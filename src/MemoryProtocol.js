@@ -58,7 +58,8 @@ export default class MemoryProtocol {
     const push = action === 'PUSH';
     invariant(
       push || action === 'REPLACE',
-      `Unrecognized memory protocol action ${action}.`,
+      `Unrecognized memory protocol action: %s.`,
+      action,
     );
 
     const delta = push ? 1 : 0;
