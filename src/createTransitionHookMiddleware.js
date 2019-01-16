@@ -46,13 +46,10 @@ function runHooks(hooks, location, callback) {
     return callback(true);
   }
 
-  return runHook(
-    hooks[0],
-    location,
-    result =>
-      result != null
-        ? callback(result)
-        : runHooks(hooks.slice(1), location, callback),
+  return runHook(hooks[0], location, result =>
+    result != null
+      ? callback(result)
+      : runHooks(hooks.slice(1), location, callback),
   );
 }
 
@@ -147,10 +144,8 @@ export default function createTransitionHookMiddleware({
 
           // Without delta, we can't restore the location.
           if (payload.delta == null) {
-            return runAllowTransition(
-              hooks,
-              payload,
-              allowTransition => (allowTransition ? next(action) : null),
+            return runAllowTransition(hooks, payload, allowTransition =>
+              allowTransition ? next(action) : null,
             );
           }
 

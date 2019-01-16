@@ -53,7 +53,7 @@ export default class HashProtocol {
     invariant(
       push || action === 'REPLACE',
       `Unrecognized hash protocol action: %s.`,
-      action
+      action,
     );
 
     const delta = push ? 1 : 0;
