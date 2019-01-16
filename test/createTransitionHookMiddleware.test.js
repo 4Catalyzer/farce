@@ -189,6 +189,7 @@ describe('createTransitionHookMiddleware', () => {
     it('should warn on and ignore async hooks that throw', async () => {
       shouldWarn('Ignoring transition hook `` that failed with `Error: foo`.');
 
+      // eslint-disable-next-line require-await
       store.farce.addTransitionHook(async () => {
         throw new Error('foo');
       });

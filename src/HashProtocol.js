@@ -52,7 +52,8 @@ export default class HashProtocol {
     const push = action === 'PUSH';
     invariant(
       push || action === 'REPLACE',
-      `Unrecognized browser protocol action ${action}.`,
+      `Unrecognized hash protocol action: %s.`,
+      action,
     );
 
     const delta = push ? 1 : 0;
