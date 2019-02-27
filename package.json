@@ -9,11 +9,15 @@
   "scripts": {
     "build": "rimraf lib && babel src -d lib",
     "lint": "eslint examples/*/src src test *.js",
-    "precommit": "lint-staged",
     "prepublish": "npm run build",
     "tdd": "cross-env NODE_ENV=test karma start",
     "test": "npm run lint && npm run testonly",
     "testonly": "npm run tdd -- --single-run"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "lint-staged": {
     "*.js": [
