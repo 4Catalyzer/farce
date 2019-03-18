@@ -7,7 +7,7 @@
   ],
   "main": "lib/index.js",
   "scripts": {
-    "build": "rimraf lib && babel src -d lib",
+    "build": "babel src -d lib --delete-dir-on-start",
     "lint": "eslint examples/*/src src test *.js",
     "prepublish": "npm run build",
     "tdd": "cross-env NODE_ENV=test karma start",
@@ -52,16 +52,14 @@
     "warning": "^4.0.3"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
+    "@4c/babel-preset": "^4.1.5",
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.4",
+    "@babel/polyfill": "^7.2.5",
     "babel-eslint": "^10.0.1",
-    "babel-loader": "^7.1.5",
+    "babel-loader": "^8.0.5",
     "babel-plugin-add-module-exports": "^1.0.0",
-    "babel-plugin-dev-expression": "^0.2.1",
     "babel-plugin-istanbul": "^5.1.1",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-stage-1": "^6.24.1",
     "chai": "^4.2.0",
     "codecov": "^3.2.0",
     "cross-env": "^5.2.0",
@@ -84,7 +82,6 @@
     "lint-staged": "^8.1.5",
     "mocha": "^6.0.2",
     "prettier": "^1.16.4",
-    "rimraf": "^2.6.3",
     "sinon": "^7.2.7",
     "sinon-chai": "^3.3.0",
     "webpack": "^4.29.6"
