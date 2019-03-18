@@ -7,7 +7,7 @@
   ],
   "main": "lib/index.js",
   "scripts": {
-    "build": "babel src -d lib --delete-dir-on-start",
+    "build": "BABEL_ENV=production babel src -d lib --delete-dir-on-start",
     "lint": "eslint examples/*/src src test *.js",
     "prepublish": "npm run build",
     "tdd": "cross-env NODE_ENV=test karma start",
