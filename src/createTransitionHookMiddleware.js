@@ -1,5 +1,3 @@
-import off from 'dom-helpers/events/off';
-import on from 'dom-helpers/events/on';
 import isPromise from 'is-promise';
 import warning from 'warning';
 
@@ -115,7 +113,7 @@ export default function createTransitionHookMiddleware({
               return resultSafe;
             };
 
-            on(window, 'beforeunload', onBeforeUnload);
+            window.addEventListener('beforeunload', onBeforeUnload);
           }
 
           return next(action);
@@ -207,7 +205,7 @@ export default function createTransitionHookMiddleware({
         }
         case ActionTypes.DISPOSE:
           if (onBeforeUnload) {
-            off(window, 'beforeunload', onBeforeUnload);
+            window.removeEventListener('beforeunload', onBeforeUnload);
             onBeforeUnload = null;
           }
 

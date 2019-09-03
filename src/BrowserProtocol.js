@@ -1,5 +1,3 @@
-import off from 'dom-helpers/events/off';
-import on from 'dom-helpers/events/on';
 import invariant from 'invariant';
 
 import createPath from './utils/createPath';
@@ -41,8 +39,8 @@ export default class BrowserProtocol {
     // TODO: On most versions of IE, we need a hashChange listener for hash-
     // only changes.
 
-    on(window, 'popstate', onPopState);
-    return () => off(window, 'popstate', onPopState);
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
   }
 
   transition(location) {
