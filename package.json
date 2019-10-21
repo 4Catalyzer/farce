@@ -44,7 +44,7 @@
   },
   "homepage": "https://github.com/4Catalyzer/farce#readme",
   "dependencies": {
-    "dom-helpers": "^3.4.0",
+    "dom-helpers": "^5.1.2",
     "invariant": "^2.2.4",
     "is-promise": "^2.1.0",
     "query-string": "^5.1.1",
