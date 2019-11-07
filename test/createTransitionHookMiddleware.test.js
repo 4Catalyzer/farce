@@ -8,7 +8,7 @@ import MemoryProtocol from '../src/MemoryProtocol';
 import { shouldWarn, timeout } from './helpers';
 
 describe('createTransitionHookMiddleware', () => {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   let protocol;
   let store;
@@ -83,11 +83,15 @@ describe('createTransitionHookMiddleware', () => {
     });
 
     it('should warn on and ignore hooks that throw', () => {
-      shouldWarn('Ignoring transition hook `` that failed with `Error: foo`.');
+      shouldWarn(
+        'Ignoring transition hook `syncHook` that failed with `Error: foo`.',
+      );
 
-      store.farce.addTransitionHook(() => {
+      const syncHook = () => {
         throw new Error('foo');
-      });
+      };
+
+      store.farce.addTransitionHook(syncHook);
 
       store.dispatch(Actions.push('/bar'));
       expect(store.getState().pathname).to.equal('/bar');
@@ -187,12 +191,16 @@ describe('createTransitionHookMiddleware', () => {
     });
 
     it('should warn on and ignore async hooks that throw', async () => {
-      shouldWarn('Ignoring transition hook `` that failed with `Error: foo`.');
+      shouldWarn(
+        'Ignoring transition hook `asyncHook` that failed with `Error: foo`.',
+      );
 
       // eslint-disable-next-line require-await
-      store.farce.addTransitionHook(async () => {
+      const asyncHook = async () => {
         throw new Error('foo');
-      });
+      };
+
+      store.farce.addTransitionHook(asyncHook);
 
       store.dispatch(Actions.push('/bar'));
       expect(store.getState().pathname).to.equal('/foo');
