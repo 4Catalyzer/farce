@@ -3,43 +3,44 @@ import createBasenameMiddleware from '../src/createBasenameMiddleware';
 import { invokeMakeLocation, invokeMakeLocationDescriptor } from './helpers';
 
 describe('createBasenameMiddleware', () => {
-  [['/foo', 'basic usage'], ['/foo/', 'trailing slash in basename']].forEach(
-    ([basename, title]) => {
-      describe(title, () => {
-        const basenameMiddleware = createBasenameMiddleware({ basename });
+  [
+    ['/foo', 'basic usage'],
+    ['/foo/', 'trailing slash in basename'],
+  ].forEach(([basename, title]) => {
+    describe(title, () => {
+      const basenameMiddleware = createBasenameMiddleware({ basename });
 
-        it('should prepend basename to location descriptors', () => {
-          expect(
-            invokeMakeLocationDescriptor(basenameMiddleware, {
-              pathname: '/path',
-            }),
-          ).to.eql({
-            pathname: '/foo/path',
-          });
-        });
-
-        it('should strip basename from locations', () => {
-          expect(
-            invokeMakeLocation(basenameMiddleware, {
-              pathname: '/foo/path',
-            }),
-          ).to.eql({
+      it('should prepend basename to location descriptors', () => {
+        expect(
+          invokeMakeLocationDescriptor(basenameMiddleware, {
             pathname: '/path',
-          });
-        });
-
-        it('should set unrecognized paths to null', () => {
-          expect(
-            invokeMakeLocation(basenameMiddleware, {
-              pathname: '/bar/path',
-            }),
-          ).to.eql({
-            pathname: null,
-          });
+          }),
+        ).to.eql({
+          pathname: '/foo/path',
         });
       });
-    },
-  );
+
+      it('should strip basename from locations', () => {
+        expect(
+          invokeMakeLocation(basenameMiddleware, {
+            pathname: '/foo/path',
+          }),
+        ).to.eql({
+          pathname: '/path',
+        });
+      });
+
+      it('should set unrecognized paths to null', () => {
+        expect(
+          invokeMakeLocation(basenameMiddleware, {
+            pathname: '/bar/path',
+          }),
+        ).to.eql({
+          pathname: null,
+        });
+      });
+    });
+  });
 
   describe('trivial basename', () => {
     const basenameMiddleware = createBasenameMiddleware({ basename: '/' });
