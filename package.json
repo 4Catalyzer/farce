@@ -81,7 +81,7 @@
     "lint-staged": "^9.5.0",
     "mocha": "^7.0.0",
     "prettier": "^1.19.1",
-    "sinon": "^8.0.1",
+    "sinon": "^8.0.2",
     "sinon-chai": "^3.4.0",
     "webpack": "^4.41.5"
   }
