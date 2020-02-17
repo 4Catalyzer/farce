@@ -1,5 +1,4 @@
 import Actions from './Actions';
-
 import maybePromisify from './utils/maybePromisify';
 
 export default function createStoreHistory(

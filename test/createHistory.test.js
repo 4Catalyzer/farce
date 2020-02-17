@@ -1,6 +1,5 @@
-import createHistory from '../src/createHistory';
 import MemoryProtocol from '../src/MemoryProtocol';
-
+import createHistory from '../src/createHistory';
 import { timeout } from './helpers';
 
 describe('createHistory', () => {

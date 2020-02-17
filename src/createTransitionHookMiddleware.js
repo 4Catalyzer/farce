@@ -3,8 +3,8 @@ import on from 'dom-helpers/events/on';
 import isPromise from 'is-promise';
 import warning from 'warning';
 
-import Actions from './Actions';
 import ActionTypes from './ActionTypes';
+import Actions from './Actions';
 
 function runHook(hook, location, callback) {
   let result;
