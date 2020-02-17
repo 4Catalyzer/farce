@@ -1,5 +1,4 @@
 import createBasenameMiddleware from '../src/createBasenameMiddleware';
-
 import { invokeMakeLocation, invokeMakeLocationDescriptor } from './helpers';
 
 describe('createBasenameMiddleware', () => {

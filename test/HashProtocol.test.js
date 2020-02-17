@@ -1,5 +1,4 @@
 import HashProtocol from '../src/HashProtocol';
-
 import { timeout } from './helpers';
 
 describe('HashProtocol', () => {

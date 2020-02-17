@@ -1,10 +1,9 @@
 import { createStore } from 'redux';
 
 import Actions from '../src/Actions';
+import MemoryProtocol from '../src/MemoryProtocol';
 import createHistoryEnhancer from '../src/createHistoryEnhancer';
 import locationReducer from '../src/locationReducer';
-import MemoryProtocol from '../src/MemoryProtocol';
-
 import { shouldWarn, timeout } from './helpers';
 
 describe('createTransitionHookMiddleware', () => {

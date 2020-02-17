@@ -1,5 +1,4 @@
 import BrowserProtocol from '../src/BrowserProtocol';
-
 import { timeout } from './helpers';
 
 describe('BrowserProtocol', () => {
