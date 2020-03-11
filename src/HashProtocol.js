@@ -1,5 +1,3 @@
-import off from 'dom-helpers/events/off';
-import on from 'dom-helpers/events/on';
 import invariant from 'invariant';
 
 import StateStorage from './StateStorage';
@@ -42,8 +40,8 @@ export default class HashProtocol {
       listener(this.init());
     };
 
-    on(window, 'hashchange', onHashChange);
-    return () => off(window, 'hashchange', onHashChange);
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
   }
 
   transition(location) {
