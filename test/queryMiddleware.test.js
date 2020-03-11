@@ -1,5 +1,4 @@
 import queryMiddleware from '../src/queryMiddleware';
-
 import { invokeMakeLocation, invokeMakeLocationDescriptor } from './helpers';
 
 describe('queryMiddleware', () => {

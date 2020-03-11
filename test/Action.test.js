@@ -1,5 +1,5 @@
-import Actions from '../src/Actions';
 import ActionTypes from '../src/ActionTypes';
+import Actions from '../src/Actions';
 
 describe('Actions', () => {
   it('#init should create an INIT action', () => {
