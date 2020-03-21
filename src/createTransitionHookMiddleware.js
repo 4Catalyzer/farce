@@ -206,6 +206,12 @@ export default function createTransitionHookMiddleware({
           dispatch(Actions.go(-payload.delta));
           return undefined;
         }
+        case ActionTypes.DISPOSE:
+          if (hooks.length > 0 && onBeforeUnload) {
+            window.removeEventListener('beforeunload', onBeforeUnload);
+          }
+
+          return next(action);
         default:
           return next(action);
       }
