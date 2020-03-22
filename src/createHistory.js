@@ -9,5 +9,5 @@ export default function createHistory(options) {
   const store = createStore(locationReducer, createHistoryEnhancer(options));
   store.dispatch(Actions.init());
 
-  return createStoreHistory(store, location => location);
+  return createStoreHistory(store, (location) => location);
 }

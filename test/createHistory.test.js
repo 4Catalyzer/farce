@@ -112,7 +112,7 @@ describe('createHistory', () => {
   it('should support async transition hooks', async () => {
     let resolveHook;
     history.listenBefore(async (location, cb) => {
-      const result = await new Promise(resolve => {
+      const result = await new Promise((resolve) => {
         resolveHook = resolve;
       });
 

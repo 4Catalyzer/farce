@@ -3,11 +3,11 @@ import createLocationMiddleware from '../src/createLocationMiddleware';
 
 describe('createLocationMiddleware', () => {
   const middleware = createLocationMiddleware({
-    makeLocationDescriptor: descriptor => ({ descriptor }),
-    makeLocation: location => ({ location }),
+    makeLocationDescriptor: (descriptor) => ({ descriptor }),
+    makeLocation: (location) => ({ location }),
   });
 
-  const dispatch = middleware()(action => action.payload);
+  const dispatch = middleware()((action) => action.payload);
 
   it('should handle location descriptors for TRANSITION', () => {
     expect(
