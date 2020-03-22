@@ -9,10 +9,10 @@ testsContext.keys().forEach(testsContext);
 
 beforeEach(() => {
   /* eslint-disable no-console */
-  sinon.stub(console, 'error').callsFake(message => {
+  sinon.stub(console, 'error').callsFake((message) => {
     let expected = false;
 
-    console.error.expected.forEach(about => {
+    console.error.expected.forEach((about) => {
       if (message.includes(about)) {
         console.error.warned[about] = true;
         expected = true;

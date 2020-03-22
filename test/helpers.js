@@ -31,7 +31,7 @@ export function invokeMakeLocation(middleware, location) {
 }
 
 export function timeout(delay) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(resolve, delay);
   });
 }

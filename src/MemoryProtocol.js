@@ -18,9 +18,7 @@ export default class MemoryProtocol {
       this._index = 0;
     }
 
-    this._keyPrefix = Math.random()
-      .toString(36)
-      .slice(2, 8);
+    this._keyPrefix = Math.random().toString(36).slice(2, 8);
     this._keyIndex = 0;
 
     this._listener = null;
