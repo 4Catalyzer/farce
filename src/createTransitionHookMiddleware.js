@@ -24,7 +24,7 @@ function runHook(hook, location, callback) {
   }
 
   result
-    .catch(e => {
+    .catch((e) => {
       warning(
         false,
         'Ignoring transition hook `%s` that failed with `%s`.',
@@ -44,7 +44,7 @@ function runHooks(hooks, location, callback) {
     return callback(true);
   }
 
-  return runHook(hooks[0], location, result =>
+  return runHook(hooks[0], location, (result) =>
     result != null
       ? callback(result)
       : runHooks(hooks.slice(1), location, callback),
@@ -60,7 +60,7 @@ function maybeConfirm(result) {
 }
 
 function runAllowTransition(hooks, location, callback) {
-  return runHooks(hooks, location, result => callback(maybeConfirm(result)));
+  return runHooks(hooks, location, (result) => callback(maybeConfirm(result)));
 }
 
 export default function createTransitionHookMiddleware({
@@ -71,8 +71,8 @@ export default function createTransitionHookMiddleware({
 
   const onBeforeUnload = useBeforeUnload
     ? /* istanbul ignore next: not testable with Karma */
-      event => {
-        const syncResult = runHooks(hooks, null, result => result);
+      (event) => {
+        const syncResult = runHooks(hooks, null, (result) => result);
 
         if (syncResult === true || syncResult === undefined) {
           // An asynchronous transition hook usually means there will be a
@@ -101,7 +101,7 @@ export default function createTransitionHookMiddleware({
     hooks.push(hook);
 
     return () => {
-      hooks = hooks.filter(item => item !== hook);
+      hooks = hooks.filter((item) => item !== hook);
 
       if (hooks.length === 0 && onBeforeUnload) {
         window.removeEventListener('beforeunload', onBeforeUnload);
@@ -110,7 +110,7 @@ export default function createTransitionHookMiddleware({
   }
 
   function transitionHookMiddleware({ dispatch }) {
-    return next => action => {
+    return (next) => (action) => {
       const { type, payload } = action;
 
       if (nextStep && type === ActionTypes.UPDATE_LOCATION) {
@@ -121,7 +121,7 @@ export default function createTransitionHookMiddleware({
 
       switch (type) {
         case ActionTypes.TRANSITION:
-          return runAllowTransition(hooks, payload, allowTransition => {
+          return runAllowTransition(hooks, payload, (allowTransition) => {
             if (!allowTransition) {
               return null;
             }
@@ -145,12 +145,12 @@ export default function createTransitionHookMiddleware({
 
           // Without delta, we can't restore the location.
           if (payload.delta == null) {
-            return runAllowTransition(hooks, payload, allowTransition =>
+            return runAllowTransition(hooks, payload, (allowTransition) =>
               allowTransition ? next(action) : null,
             );
           }
 
-          const finishRunAllowTransition = result => {
+          const finishRunAllowTransition = (result) => {
             if (!maybeConfirm(result)) {
               return null;
             }
@@ -167,7 +167,7 @@ export default function createTransitionHookMiddleware({
           let sync = true;
           let rewindDone = false;
 
-          const syncResult = runHooks(hooks, payload, result => {
+          const syncResult = runHooks(hooks, payload, (result) => {
             if (sync) {
               return result;
             }

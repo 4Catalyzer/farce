@@ -126,7 +126,7 @@ describe('createTransitionHookMiddleware', () => {
       let resolveHook;
       store.farce.addTransitionHook(
         () =>
-          new Promise(resolve => {
+          new Promise((resolve) => {
             resolveHook = resolve;
           }),
       );
@@ -144,7 +144,7 @@ describe('createTransitionHookMiddleware', () => {
       let resolveHook;
       store.farce.addTransitionHook(
         () =>
-          new Promise(resolve => {
+          new Promise((resolve) => {
             resolveHook = resolve;
           }),
       );
@@ -164,13 +164,13 @@ describe('createTransitionHookMiddleware', () => {
 
       store.farce.addTransitionHook(
         () =>
-          new Promise(resolve => {
+          new Promise((resolve) => {
             resolveHook1 = resolve;
           }),
       );
       store.farce.addTransitionHook(
         () =>
-          new Promise(resolve => {
+          new Promise((resolve) => {
             resolveHook2 = resolve;
           }),
       );
@@ -252,7 +252,7 @@ describe('createTransitionHookMiddleware', () => {
       let resolveHook;
       store.farce.addTransitionHook(
         () =>
-          new Promise(resolve => {
+          new Promise((resolve) => {
             resolveHook = resolve;
           }),
       );
@@ -270,7 +270,7 @@ describe('createTransitionHookMiddleware', () => {
       let resolveHook;
       store.farce.addTransitionHook(
         () =>
-          new Promise(resolve => {
+          new Promise((resolve) => {
             resolveHook = resolve;
           }),
       );
@@ -319,8 +319,8 @@ describe('createTransitionHookMiddleware', () => {
       let resolveListener;
 
       // eslint-disable-next-line no-underscore-dangle
-      protocol._listener = async location => {
-        await new Promise(resolve => {
+      protocol._listener = async (location) => {
+        await new Promise((resolve) => {
           resolveListener = resolve;
         });
 
@@ -330,7 +330,7 @@ describe('createTransitionHookMiddleware', () => {
       let resolveHook;
       store.farce.addTransitionHook(
         () =>
-          new Promise(resolve => {
+          new Promise((resolve) => {
             resolveHook = resolve;
           }),
       );
@@ -370,7 +370,7 @@ describe('createTransitionHookMiddleware', () => {
       let resolveHook;
       store.farce.addTransitionHook(
         () =>
-          new Promise(resolve => {
+          new Promise((resolve) => {
             resolveHook = resolve;
           }),
       );
@@ -395,7 +395,7 @@ describe('createTransitionHookMiddleware', () => {
       let resolveHook;
       store.farce.addTransitionHook(
         () =>
-          new Promise(resolve => {
+          new Promise((resolve) => {
             resolveHook = resolve;
           }),
       );

@@ -4,9 +4,7 @@ import createPath from './utils/createPath';
 
 export default class BrowserProtocol {
   constructor() {
-    this._keyPrefix = Math.random()
-      .toString(36)
-      .slice(2, 8);
+    this._keyPrefix = Math.random().toString(36).slice(2, 8);
     this._keyIndex = 0;
 
     this._index = null;

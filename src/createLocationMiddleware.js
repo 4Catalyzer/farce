@@ -5,7 +5,7 @@ export default function createLocationMiddleware({
   makeLocation,
 }) {
   return function locationMiddleware() {
-    return next => action => {
+    return (next) => (action) => {
       const { type, payload } = action;
 
       switch (type) {
