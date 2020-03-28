@@ -388,20 +388,29 @@ describe('createNavigationListenerMiddleware', () => {
       store.dispatch(Actions.init());
     });
 
-    it('should manage event listener on adding and removing listener', () => {
+    it('should manage event listener', () => {
       expect(window.addEventListener).not.to.have.been.called();
-      const removeNavigationListener = store.farce.addNavigationListener(
+
+      const removeNavigationListener1 = store.farce.addNavigationListener(
         () => null,
-        {
-          beforeUnload: true,
-        },
+        { beforeUnload: true },
       );
       expect(window.addEventListener)
         .to.have.been.calledOnce()
         .and.to.have.been.called.with('beforeunload');
 
+      const removeNavigationListener2 = store.farce.addNavigationListener(
+        () => null,
+        { beforeUnload: true },
+      );
+      expect(window.addEventListener)
+        .to.have.been.calledOnce()
+        .and.to.have.been.called.with('beforeunload');
+
+      removeNavigationListener1();
       expect(window.removeEventListener).not.to.have.been.called();
-      removeNavigationListener();
+
+      removeNavigationListener2();
       expect(window.removeEventListener)
         .to.have.been.calledOnce()
         .and.to.have.been.called.with('beforeunload');
@@ -409,8 +418,8 @@ describe('createNavigationListenerMiddleware', () => {
 
     it('should remove event listener on dispose', () => {
       store.farce.addNavigationListener(() => null, { beforeUnload: true });
-
       expect(window.removeEventListener).not.to.have.been.called();
+
       store.dispatch(Actions.dispose());
       expect(window.removeEventListener)
         .to.have.been.calledOnce()
