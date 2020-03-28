@@ -1,6 +1,6 @@
 import invariant from 'invariant';
 
-import createPath from './utils/createPath';
+import createPath from './createPath';
 
 export default class BrowserProtocol {
   constructor() {

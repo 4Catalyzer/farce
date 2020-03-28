@@ -1,8 +1,8 @@
 import invariant from 'invariant';
 
 import StateStorage from './StateStorage';
-import createPath from './utils/createPath';
-import ensureLocation from './utils/ensureLocation';
+import createPath from './createPath';
+import ensureLocation from './ensureLocation';
 
 export default class HashProtocol {
   constructor() {

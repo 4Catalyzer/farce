@@ -10,7 +10,9 @@ describe('index', () => {
     expect(farce.createHistoryMiddleware).to.exist();
     expect(farce.createLocationMiddleware).to.exist();
     expect(farce.createNavigationListenerMiddleware).to.exist();
+    expect(farce.createPath).to.exist();
     expect(farce.createQueryMiddleware).to.exist();
+    expect(farce.ensureLocation).to.exist();
     expect(farce.ensureLocationMiddleware).to.exist();
     expect(farce.locationReducer).to.exist();
     expect(farce.queryMiddleware).to.exist();

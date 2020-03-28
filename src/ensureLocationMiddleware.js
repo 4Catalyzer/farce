@@ -1,5 +1,5 @@
 import ActionTypes from './ActionTypes';
-import ensureLocation from './utils/ensureLocation';
+import ensureLocation from './ensureLocation';
 
 export default function ensureLocationMiddleware() {
   return (next) => (action) => {

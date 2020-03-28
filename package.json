@@ -7,9 +7,13 @@
   ],
   "main": "lib/index.js",
   "scripts": {
-    "build": "babel src -d lib --delete-dir-on-start",
+    "build": "rimraf lib && yarn build:cjs && yarn build:esm && yarn build:pick",
+    "build:cjs": "babel src -d lib/cjs",
+    "build:esm": "babel src -d lib/esm --env-name esm",
+    "build:pick": "cherry-pick ../src --cjs-dir=cjs --esm-dir=esm --cwd=lib",
     "lint": "eslint examples/*/src src test *.js",
     "prepublish": "npm run build",
+    "release": "rollout",
     "tdd": "cross-env NODE_ENV=test karma start",
     "test": "npm run lint && npm run testonly",
     "testonly": "npm run tdd -- --single-run"
@@ -26,6 +30,9 @@
     "printWidth": 79,
     "singleQuote": true,
     "trailingComma": "all"
+  },
+  "publishConfig": {
+    "directory": "lib"
   },
   "repository": {
     "type": "git",
@@ -49,6 +56,7 @@
   },
   "devDependencies": {
     "@4c/babel-preset": "^7.3.4",
+    "@4c/rollout": "^2.1.4",
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.9.0",
     "@babel/polyfill": "^7.8.7",
@@ -56,6 +64,7 @@
     "babel-plugin-add-module-exports": "^1.0.2",
     "babel-plugin-istanbul": "^6.0.0",
     "chai": "^4.2.0",
+    "cherry-pick": "^0.5.0",
     "codecov": "^3.6.5",
     "cross-env": "^7.0.2",
     "delay": "^4.3.0",
@@ -79,6 +88,7 @@
     "mocha": "^7.1.1",
     "p-defer": "^3.0.0",
     "prettier": "^2.0.1",
+    "rimraf": "^3.0.2",
     "sinon": "^9.0.1",
     "sinon-chai": "^3.5.0",
     "webpack": "^4.42.0"

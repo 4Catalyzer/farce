@@ -273,12 +273,12 @@ const value3 = stateStorage.read(location, 'bar');
 
 ### Minimizing bundle size
 
-The top-level `farce` package exports everything available in this library. It is unlikely that any single application will use all the features available. As such, for real applications, you should import the modules you need from `farce/lib` directly, to pull in only the code that you use.
+The top-level `farce` package exports everything available in this library. It is unlikely that any single application will use all the features available. As such, for real applications, you should import the modules you need directly, to pull in only the code that you use.
 
 ```js
-import BrowserProtocol from 'farce/lib/BrowserProtocol';
-import createHistoryEnhancer from 'farce/lib/createHistoryEnhancer';
-import queryMiddleware from 'farce/lib/queryMiddleware';
+import BrowserProtocol from 'farce/BrowserProtocol';
+import createHistoryEnhancer from 'farce/createHistoryEnhancer';
+import queryMiddleware from 'farce/queryMiddleware';
 
 // Instead of:
 // import {
