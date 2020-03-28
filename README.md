@@ -143,7 +143,8 @@ The `createQueryMiddleware` middleware factory creates a custom query middleware
 import qs from 'qs';
 
 const customQueryMiddleware = createQueryMiddleware({
-  parse: qs.parse, stringify: qs.stringify,
+  parse: qs.parse,
+  stringify: qs.stringify,
 });
 ```
 
@@ -181,18 +182,22 @@ If a `queryMiddleware` is applied, the location object will also contain a `quer
 store.dispatch(FarceActions.push('/foo?bar=baz#qux'));
 
 // Equivalent location descriptor object:
-store.dispatch(FarceActions.push({
-  pathname: '/foo',
-  search: '?bar=baz',
-  hash: '#qux',
-}));
+store.dispatch(
+  FarceActions.push({
+    pathname: '/foo',
+    search: '?bar=baz',
+    hash: '#qux',
+  }),
+);
 
 // Given a location object, you can override a subset of its properties:
-store.dispatch(FarceActions.replace({
-  ...location,
-  query: { the: 'new-query' },
-  hash: '#new-hash',
-}));
+store.dispatch(
+  FarceActions.replace({
+    ...location,
+    query: { the: 'new-query' },
+    hash: '#new-hash',
+  }),
+);
 ```
 
 The history enhancer adds a `farce` object as a property to the store that exposes `createHref` and `createLocation` methods. `createHref` takes a location descriptor and returns a link `href`. `createLocation` takes a location descriptor and returns the corresponding location object.
@@ -210,12 +215,12 @@ const location = store.farce.createLocation('/foo?the=query');
 
 ### Transition hooks
 
-The `farce` object on the store also has an `addTransitionHook` method. This method takes a transition hook function and returns a function to remove the transition hook.
+The `farce` object on the store also has an `addTransitionHook` method. This method takes a transition hook function and an optional options object and returns a function to remove the transition hook.
 
 ```js
-const removeTransitionHook = store.farce.addTransitionHook(location => (
-  location.pathname === '/bar' ? 'Are you sure you want to go to /bar?' : true
-));
+const removeTransitionHook = store.farce.addTransitionHook(location =>
+  location.pathname === '/bar' ? 'Are you sure you want to go to /bar?' : true,
+);
 
 // To remove the transition hook:
 removeTransitionHook();
@@ -229,25 +234,19 @@ The transition hook function receives the location to which the user is attempti
 - A nully value to call the next transition hook and use its return value, if present, or else to allow the transition
 - A promise that resolves to any of the above values, to allow or block the transition once the promise resolves
 
-When creating the history enhancer, you can set the `useBeforeUnload` option to run transition hooks when the user attempts to leave the page entirely.
+When adding a transition hook, you can set the `beforeUnload` option to run the hook when the user attempts to leave the page entirely. If `beforeUnload` is set, the transition hook will be called with a `null` location when the user attempts to leave the page. In this scenario, the transition hook must return a non-promise value.
 
 ```js
-const historyEnhancer = createHistoryEnhancer({
-  ...options,
-  useBeforeUnload: true,
-});
-```
+store.farce.addTransitionHook(
+  location => {
+    if (location === null) {
+      return false;
+    }
 
-If `useBeforeUnload` is set, transition hooks will be called with a `null` location when the user attempts to leave the page. In this scenario, the transition hook must return a non-promise value.
-
-```js
-function transitionHook(location) {
-  if (location === null) {
-    return false;
-  }
-
-  return asyncConfirm(location);
-}
+    return asyncConfirm(location);
+  },
+  { beforeUnload: true },
+);
 ```
 
 ### Transient state storage
@@ -299,9 +298,7 @@ import queryMiddleware from 'farce/lib/queryMiddleware';
 
 [build-badge]: https://img.shields.io/travis/4Catalyzer/farce/master.svg
 [build]: https://travis-ci.org/4Catalyzer/farce
-
 [npm-badge]: https://img.shields.io/npm/v/farce.svg
 [npm]: https://www.npmjs.org/package/farce
-
 [codecov-badge]: https://img.shields.io/codecov/c/github/4Catalyzer/farce/master.svg
 [codecov]: https://codecov.io/gh/4Catalyzer/farce

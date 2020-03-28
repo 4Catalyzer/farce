@@ -4,7 +4,7 @@ import warning from 'warning';
 import ActionTypes from './ActionTypes';
 import Actions from './Actions';
 
-function runHook(hook, location, callback) {
+function runHookEntry({ hook }, location, callback) {
   let result;
   try {
     result = hook(location);
@@ -39,15 +39,15 @@ function runHook(hook, location, callback) {
   return undefined;
 }
 
-function runHooks(hooks, location, callback) {
-  if (!hooks.length) {
+function runHookEntries(hookEntries, location, callback) {
+  if (!hookEntries.length) {
     return callback(true);
   }
 
-  return runHook(hooks[0], location, (result) =>
+  return runHookEntry(hookEntries[0], location, (result) =>
     result != null
       ? callback(result)
-      : runHooks(hooks.slice(1), location, callback),
+      : runHookEntries(hookEntries.slice(1), location, callback),
   );
 }
 
@@ -59,51 +59,51 @@ function maybeConfirm(result) {
   return window.confirm(result); // eslint-disable-line no-alert
 }
 
-function runAllowTransition(hooks, location, callback) {
-  return runHooks(hooks, location, (result) => callback(maybeConfirm(result)));
+function runAllowTransition(hookEntries, location, callback) {
+  return runHookEntries(hookEntries, location, (result) =>
+    callback(maybeConfirm(result)),
+  );
 }
 
-export default function createTransitionHookMiddleware({
-  useBeforeUnload = false,
-}) {
+export default function createTransitionHookMiddleware() {
   let nextStep = null;
-  let hooks = [];
+  let hookEntries = [];
 
-  const onBeforeUnload = useBeforeUnload
-    ? /* istanbul ignore next: not testable with Karma */
-      (event) => {
-        const syncResult = runHooks(hooks, null, (result) => result);
+  /* istanbul ignore next: not testable with Karma */
+  function onBeforeUnload(event) {
+    const syncResult = runHookEntries(hookEntries, null, (result) => result);
 
-        if (syncResult === true || syncResult === undefined) {
-          // An asynchronous transition hook usually means there will be a
-          //  custom confirm dialog. However, we'll already be showing the
-          //  before unload dialog, and there's no way to prevent the custom
-          //  dialog from showing. In such cases, the application code will
-          //  need to explicitly handle the null location anyway, so don't
-          //  potentially show two confirmation dialogs.
-          return undefined;
-        }
+    if (syncResult === true || syncResult === undefined) {
+      // An asynchronous transition hook usually means there will be a custom
+      //  confirm dialog. However, we'll already be showing the before unload
+      //  dialog, and there's no way to prevent the custom dialog from showing.
+      //  In such cases, the application code will need to explicitly handle
+      //  the null location anyway, so don't potentially show two confirmation
+      //  dialogs.
+      return undefined;
+    }
 
-        const resultSafe = syncResult || '';
+    const resultSafe = syncResult || '';
 
-        event.returnValue = resultSafe; // eslint-disable-line no-param-reassign
-        return resultSafe;
-      }
-    : null;
+    event.preventDefault();
+    event.returnValue = resultSafe; // eslint-disable-line no-param-reassign
+    return resultSafe;
+  }
 
-  function addHook(hook) {
+  function addHook(hook, { beforeUnload = false } = {}) {
     // Add the beforeunload event listener only as needed, as its presence
     //  prevents the page from being added to the page navigation cache.
-    if (hooks.length === 0 && onBeforeUnload) {
+    if (beforeUnload && hookEntries.every((item) => !item.beforeUnload)) {
       window.addEventListener('beforeunload', onBeforeUnload);
     }
 
-    hooks.push(hook);
+    const hookEntry = { hook, beforeUnload };
+    hookEntries.push(hookEntry);
 
     return () => {
-      hooks = hooks.filter((item) => item !== hook);
+      hookEntries = hookEntries.filter((item) => item !== hookEntry);
 
-      if (hooks.length === 0 && onBeforeUnload) {
+      if (beforeUnload && hookEntries.every((item) => !item.beforeUnload)) {
         window.removeEventListener('beforeunload', onBeforeUnload);
       }
     };
@@ -121,19 +121,23 @@ export default function createTransitionHookMiddleware({
 
       switch (type) {
         case ActionTypes.TRANSITION:
-          return runAllowTransition(hooks, payload, (allowTransition) => {
-            if (!allowTransition) {
-              return null;
-            }
+          return runAllowTransition(
+            hookEntries,
+            payload,
+            (allowTransition) => {
+              if (!allowTransition) {
+                return null;
+              }
 
-            // Skip the repeated transition hook check on UPDATE_LOCATION.
-            nextStep = (nextNext, nextAction) => nextNext(nextAction);
+              // Skip the repeated transition hook check on UPDATE_LOCATION.
+              nextStep = (nextNext, nextAction) => nextNext(nextAction);
 
-            return next(action);
-          });
+              return next(action);
+            },
+          );
         case ActionTypes.UPDATE_LOCATION: {
           // No transition hooks to run.
-          if (!hooks.length) {
+          if (!hookEntries.length) {
             return next(action);
           }
 
@@ -145,8 +149,10 @@ export default function createTransitionHookMiddleware({
 
           // Without delta, we can't restore the location.
           if (payload.delta == null) {
-            return runAllowTransition(hooks, payload, (allowTransition) =>
-              allowTransition ? next(action) : null,
+            return runAllowTransition(
+              hookEntries,
+              payload,
+              (allowTransition) => (allowTransition ? next(action) : null),
             );
           }
 
@@ -167,7 +173,7 @@ export default function createTransitionHookMiddleware({
           let sync = true;
           let rewindDone = false;
 
-          const syncResult = runHooks(hooks, payload, (result) => {
+          const syncResult = runHookEntries(hookEntries, payload, (result) => {
             if (sync) {
               return result;
             }
@@ -207,7 +213,7 @@ export default function createTransitionHookMiddleware({
           return undefined;
         }
         case ActionTypes.DISPOSE:
-          if (hooks.length > 0 && onBeforeUnload) {
+          if (hookEntries.length > 0 && onBeforeUnload) {
             window.removeEventListener('beforeunload', onBeforeUnload);
           }
 

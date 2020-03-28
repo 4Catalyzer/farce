@@ -210,12 +210,12 @@ describe('createTransitionHookMiddleware', () => {
     });
 
     it('should allow removing hooks', () => {
-      const removeHook = store.farce.addTransitionHook(() => false);
+      const removeTransitionHook = store.farce.addTransitionHook(() => false);
 
       store.dispatch(Actions.push('/bar'));
       expect(store.getState().pathname).to.equal('/foo');
 
-      removeHook();
+      removeTransitionHook();
 
       store.dispatch(Actions.push('/bar'));
       expect(store.getState().pathname).to.equal('/bar');
@@ -417,7 +417,7 @@ describe('createTransitionHookMiddleware', () => {
     });
   });
 
-  describe('useBeforeUnload', () => {
+  describe('beforeUnload', () => {
     beforeEach(() => {
       // Get rid of the old store. We'll replace it with a new one.
       store.dispatch(Actions.dispose());
@@ -425,36 +425,43 @@ describe('createTransitionHookMiddleware', () => {
       sandbox.stub(window, 'addEventListener');
       sandbox.stub(window, 'removeEventListener');
 
-      store = createStore(
-        () => null,
-        createHistoryEnhancer({ protocol, useBeforeUnload: true }),
-      );
+      store = createStore(() => null, createHistoryEnhancer({ protocol }));
 
       store.dispatch(Actions.init());
     });
 
     it('should manage event listener on adding and removing hook', () => {
       expect(window.addEventListener).not.to.have.been.called();
-      const removeHook = store.farce.addTransitionHook(() => null);
+      const removeTransitionHook = store.farce.addTransitionHook(() => null, {
+        beforeUnload: true,
+      });
       expect(window.addEventListener)
         .to.have.been.calledOnce()
         .and.to.have.been.called.with('beforeunload');
 
       expect(window.removeEventListener).not.to.have.been.called();
-      removeHook();
+      removeTransitionHook();
       expect(window.removeEventListener)
         .to.have.been.calledOnce()
         .and.to.have.been.called.with('beforeunload');
     });
 
     it('should remove event listener on dispose', () => {
-      store.farce.addTransitionHook(() => null);
+      store.farce.addTransitionHook(() => null, { beforeUnload: true });
 
       expect(window.removeEventListener).not.to.have.been.called();
       store.dispatch(Actions.dispose());
       expect(window.removeEventListener)
         .to.have.been.calledOnce()
         .and.to.have.been.called.with('beforeunload');
+    });
+
+    it('should not add event listener without beforeUnload', () => {
+      const removeTransitionHook = store.farce.addTransitionHook(() => null);
+      expect(window.addEventListener).not.to.have.been.called();
+
+      removeTransitionHook();
+      expect(window.removeEventListener).not.to.have.been.called();
     });
   });
 });
