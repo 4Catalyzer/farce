@@ -9,9 +9,9 @@
   "module": "lib/esm/index.js",
   "scripts": {
     "build": "rimraf lib && npm run build:cjs && npm run build:esm && npm run build:pick",
-    "build:cjs": "babel src -d lib/cjs",
-    "build:esm": "babel src -d lib/esm --env-name esm",
-    "build:pick": "cherry-pick ../src --cjs-dir=cjs --esm-dir=esm --cwd=lib",
+    "build:cjs": "babel -d lib/cjs src",
+    "build:esm": "babel --env-name esm -d lib/esm src",
+    "build:pick": "cherry-pick --cjs-dir cjs --esm-dir esm --cwd lib ../src",
     "lint": "eslint examples/*/src src test *.js",
     "prepublish": "npm run build",
     "release": "rollout",
