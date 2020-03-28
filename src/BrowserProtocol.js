@@ -41,7 +41,7 @@ export default class BrowserProtocol {
     return () => window.removeEventListener('popstate', onPopState);
   }
 
-  transition(location) {
+  navigate(location) {
     const { action, state } = location;
 
     const push = action === 'PUSH';

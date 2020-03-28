@@ -2,7 +2,7 @@ export default {
   INIT: '@@farce/INIT',
   PUSH: '@@farce/PUSH',
   REPLACE: '@@farce/REPLACE',
-  TRANSITION: '@@farce/TRANSITION',
+  NAVIGATE: '@@farce/NAVIGATE',
   GO: '@@farce/GO',
   CREATE_HREF: '@@farce/CREATE_HREF',
   CREATE_LOCATION: '@@farce/CREATE_LOCATION',

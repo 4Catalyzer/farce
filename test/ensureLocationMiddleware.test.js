@@ -16,7 +16,7 @@ describe('ensureLocationMiddleware', () => {
     });
 
     expect(next).to.be.calledWith({
-      type: ActionTypes.TRANSITION,
+      type: ActionTypes.NAVIGATE,
       payload: {
         action: 'PUSH',
         pathname: '/foo',
@@ -33,7 +33,7 @@ describe('ensureLocationMiddleware', () => {
     });
 
     expect(next).to.be.calledWith({
-      type: ActionTypes.TRANSITION,
+      type: ActionTypes.NAVIGATE,
       payload: {
         action: 'REPLACE',
         pathname: '/foo',

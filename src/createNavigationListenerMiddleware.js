@@ -4,15 +4,15 @@ import warning from 'warning';
 import ActionTypes from './ActionTypes';
 import Actions from './Actions';
 
-function runHookEntry({ hook }, location, callback) {
+function runListenerEntry({ listener }, location, callback) {
   let result;
   try {
-    result = hook(location);
+    result = listener(location);
   } catch (e) {
     warning(
       false,
-      'Ignoring transition hook `%s` that failed with `%s`.',
-      hook.name,
+      'Ignoring navigation listener `%s` that failed with `%s`.',
+      listener.name,
       e,
     );
 
@@ -27,8 +27,8 @@ function runHookEntry({ hook }, location, callback) {
     .catch((e) => {
       warning(
         false,
-        'Ignoring transition hook `%s` that failed with `%s`.',
-        hook.name,
+        'Ignoring navigation listener `%s` that failed with `%s`.',
+        listener.name,
         e,
       );
 
@@ -39,15 +39,15 @@ function runHookEntry({ hook }, location, callback) {
   return undefined;
 }
 
-function runHookEntries(hookEntries, location, callback) {
-  if (!hookEntries.length) {
+function runListenerEntries(listenerEntries, location, callback) {
+  if (!listenerEntries.length) {
     return callback(true);
   }
 
-  return runHookEntry(hookEntries[0], location, (result) =>
+  return runListenerEntry(listenerEntries[0], location, (result) =>
     result != null
       ? callback(result)
-      : runHookEntries(hookEntries.slice(1), location, callback),
+      : runListenerEntries(listenerEntries.slice(1), location, callback),
   );
 }
 
@@ -59,27 +59,30 @@ function maybeConfirm(result) {
   return window.confirm(result); // eslint-disable-line no-alert
 }
 
-function runAllowTransition(hookEntries, location, callback) {
-  return runHookEntries(hookEntries, location, (result) =>
+function runAllowNavigation(listenerEntries, location, callback) {
+  return runListenerEntries(listenerEntries, location, (result) =>
     callback(maybeConfirm(result)),
   );
 }
 
-export default function createTransitionHookMiddleware() {
+export default function createNavigationListenerMiddleware() {
   let nextStep = null;
-  let hookEntries = [];
+  let listenerEntries = [];
 
   /* istanbul ignore next: not testable with Karma */
   function onBeforeUnload(event) {
-    const syncResult = runHookEntries(hookEntries, null, (result) => result);
+    const syncResult = runListenerEntries(
+      listenerEntries,
+      null,
+      (result) => result,
+    );
 
     if (syncResult === true || syncResult === undefined) {
-      // An asynchronous transition hook usually means there will be a custom
-      //  confirm dialog. However, we'll already be showing the before unload
-      //  dialog, and there's no way to prevent the custom dialog from showing.
-      //  In such cases, the application code will need to explicitly handle
-      //  the null location anyway, so don't potentially show two confirmation
-      //  dialogs.
+      // An asynchronous navigation listener usually means there will be a
+      //  custom confirm dialog. However, we'll already be showing the before
+      //  unload dialog, and there's no way to prevent the custom dialog from
+      //  showing. This is really an error condition in the navigation
+      //  listener, but this is the most reasonable thing we can do.
       return undefined;
     }
 
@@ -90,26 +93,31 @@ export default function createTransitionHookMiddleware() {
     return resultSafe;
   }
 
-  function addHook(hook, { beforeUnload = false } = {}) {
+  function addListener(listener, { beforeUnload = false } = {}) {
     // Add the beforeunload event listener only as needed, as its presence
     //  prevents the page from being added to the page navigation cache.
-    if (beforeUnload && hookEntries.every((item) => !item.beforeUnload)) {
+    if (beforeUnload && listenerEntries.every((item) => !item.beforeUnload)) {
       window.addEventListener('beforeunload', onBeforeUnload);
     }
 
-    const hookEntry = { hook, beforeUnload };
-    hookEntries.push(hookEntry);
+    const listenerEntry = { listener, beforeUnload };
+    listenerEntries.push(listenerEntry);
 
     return () => {
-      hookEntries = hookEntries.filter((item) => item !== hookEntry);
+      listenerEntries = listenerEntries.filter(
+        (item) => item !== listenerEntry,
+      );
 
-      if (beforeUnload && hookEntries.every((item) => !item.beforeUnload)) {
+      if (
+        beforeUnload &&
+        listenerEntries.every((item) => !item.beforeUnload)
+      ) {
         window.removeEventListener('beforeunload', onBeforeUnload);
       }
     };
   }
 
-  function transitionHookMiddleware({ dispatch }) {
+  function navigationListenerMiddleware({ dispatch }) {
     return (next) => (action) => {
       const { type, payload } = action;
 
@@ -120,50 +128,51 @@ export default function createTransitionHookMiddleware() {
       }
 
       switch (type) {
-        case ActionTypes.TRANSITION:
-          return runAllowTransition(
-            hookEntries,
+        case ActionTypes.NAVIGATE:
+          return runAllowNavigation(
+            listenerEntries,
             payload,
-            (allowTransition) => {
-              if (!allowTransition) {
+            (allowNavigation) => {
+              if (!allowNavigation) {
                 return null;
               }
 
-              // Skip the repeated transition hook check on UPDATE_LOCATION.
+              // Skip the repeated navigation listener check on
+              //  UPDATE_LOCATION.
               nextStep = (nextNext, nextAction) => nextNext(nextAction);
 
               return next(action);
             },
           );
         case ActionTypes.UPDATE_LOCATION: {
-          // No transition hooks to run.
-          if (!hookEntries.length) {
+          // No navigation listeners to run.
+          if (!listenerEntries.length) {
             return next(action);
           }
 
           // This is the initial load. It doesn't make sense to block this
-          // transition.
+          //  navigation.
           if (payload.delta === 0) {
             return next(action);
           }
 
           // Without delta, we can't restore the location.
           if (payload.delta == null) {
-            return runAllowTransition(
-              hookEntries,
+            return runAllowNavigation(
+              listenerEntries,
               payload,
-              (allowTransition) => (allowTransition ? next(action) : null),
+              (allowNavigation) => (allowNavigation ? next(action) : null),
             );
           }
 
-          const finishRunAllowTransition = (result) => {
+          const finishRunAllowNavigation = (result) => {
             if (!maybeConfirm(result)) {
               return null;
             }
 
             // Release the original UPDATE_LOCATION when the un-rewind
-            // happens. We need to do so here to maintain the invariant that
-            // the store location only updates after the window location.
+            //  happens. We need to do so here to maintain the invariant that
+            //  the store location only updates after the window location.
             nextStep = () => next(action);
 
             dispatch(Actions.go(payload.delta));
@@ -173,47 +182,51 @@ export default function createTransitionHookMiddleware() {
           let sync = true;
           let rewindDone = false;
 
-          const syncResult = runHookEntries(hookEntries, payload, (result) => {
-            if (sync) {
-              return result;
-            }
+          const syncResult = runListenerEntries(
+            listenerEntries,
+            payload,
+            (result) => {
+              if (sync) {
+                return result;
+              }
 
-            if (!rewindDone) {
-              // The rewind hasn't finished yet. Replace the next step hook so
-              // we finish running when that happens.
-              nextStep = () => finishRunAllowTransition(result);
-              return undefined;
-            }
+              if (!rewindDone) {
+                // The rewind hasn't finished yet. Replace the next step listener
+                //  so we finish running when that happens.
+                nextStep = () => finishRunAllowNavigation(result);
+                return undefined;
+              }
 
-            return finishRunAllowTransition(result);
-          });
+              return finishRunAllowNavigation(result);
+            },
+          );
 
           sync = false;
 
           switch (syncResult) {
             case true:
-              // The transition was synchronously allowed, so skip the rewind.
+              // The navigation was synchronously allowed, so skip the rewind.
               return next(action);
             case false:
               // We're done as soon as the rewind finishes.
               nextStep = () => {};
               break;
             case undefined:
-              // Let the callback from runHooks take care of things.
+              // Let the callback from runListeners take care of things.
               nextStep = () => {
                 rewindDone = true;
               };
               break;
             default:
               // Show the confirm dialog after the rewind.
-              nextStep = () => finishRunAllowTransition(syncResult);
+              nextStep = () => finishRunAllowNavigation(syncResult);
           }
 
           dispatch(Actions.go(-payload.delta));
           return undefined;
         }
         case ActionTypes.DISPOSE:
-          if (hookEntries.length > 0 && onBeforeUnload) {
+          if (listenerEntries.length > 0 && onBeforeUnload) {
             window.removeEventListener('beforeunload', onBeforeUnload);
           }
 
@@ -224,6 +237,6 @@ export default function createTransitionHookMiddleware() {
     };
   }
 
-  transitionHookMiddleware.addHook = addHook;
-  return transitionHookMiddleware;
+  navigationListenerMiddleware.addListener = addListener;
+  return navigationListenerMiddleware;
 }

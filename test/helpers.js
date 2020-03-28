@@ -18,7 +18,7 @@ export function invokeLocationMiddleware(middleware, action) {
 
 export function invokeMakeLocationDescriptor(middleware, location) {
   return invokeLocationMiddleware(middleware, {
-    type: ActionTypes.TRANSITION,
+    type: ActionTypes.NAVIGATE,
     payload: location,
   }).payload;
 }
@@ -28,10 +28,4 @@ export function invokeMakeLocation(middleware, location) {
     type: ActionTypes.UPDATE_LOCATION,
     payload: location,
   }).payload;
-}
-
-export function timeout(delay) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, delay);
-  });
 }

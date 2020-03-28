@@ -6,13 +6,11 @@ describe('index', () => {
     expect(farce.ActionTypes).to.exist();
     expect(farce.BrowserProtocol).to.exist();
     expect(farce.createBasenameMiddleware).to.exist();
-    expect(farce.createHistory).to.exist();
     expect(farce.createHistoryEnhancer).to.exist();
     expect(farce.createHistoryMiddleware).to.exist();
     expect(farce.createLocationMiddleware).to.exist();
+    expect(farce.createNavigationListenerMiddleware).to.exist();
     expect(farce.createQueryMiddleware).to.exist();
-    expect(farce.createStoreHistory).to.exist();
-    expect(farce.createTransitionHookMiddleware).to.exist();
     expect(farce.ensureLocationMiddleware).to.exist();
     expect(farce.locationReducer).to.exist();
     expect(farce.queryMiddleware).to.exist();

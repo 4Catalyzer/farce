@@ -49,7 +49,7 @@ export default class MemoryProtocol {
     };
   }
 
-  transition(location) {
+  navigate(location) {
     // Match BrowserProtocol here in only saving these fields.
     const { action, pathname, search, hash, state } = location;
 
