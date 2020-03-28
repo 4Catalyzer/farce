@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "farce": "^0.4.0",
+    "farce": "^0.4.1",
     "react-scripts": "3.4.1",
     "redux": "^4.0.5"
   },
