@@ -69,15 +69,45 @@ export default function createTransitionHookMiddleware({
   let nextStep = null;
   let hooks = [];
 
+  const onBeforeUnload = useBeforeUnload
+    ? /* istanbul ignore next: not testable with Karma */
+      (event) => {
+        const syncResult = runHooks(hooks, null, (result) => result);
+
+        if (syncResult === true || syncResult === undefined) {
+          // An asynchronous transition hook usually means there will be a
+          //  custom confirm dialog. However, we'll already be showing the
+          //  before unload dialog, and there's no way to prevent the custom
+          //  dialog from showing. In such cases, the application code will
+          //  need to explicitly handle the null location anyway, so don't
+          //  potentially show two confirmation dialogs.
+          return undefined;
+        }
+
+        const resultSafe = syncResult || '';
+
+        event.returnValue = resultSafe; // eslint-disable-line no-param-reassign
+        return resultSafe;
+      }
+    : null;
+
   function addHook(hook) {
+    // Add the beforeunload event listener only as needed, as its presence
+    //  prevents the page from being added to the page navigation cache.
+    if (hooks.length === 0 && onBeforeUnload) {
+      window.addEventListener('beforeunload', onBeforeUnload);
+    }
+
     hooks.push(hook);
 
     return () => {
       hooks = hooks.filter((item) => item !== hook);
+
+      if (hooks.length === 0 && onBeforeUnload) {
+        window.removeEventListener('beforeunload', onBeforeUnload);
+      }
     };
   }
-
-  let onBeforeUnload = null;
 
   function transitionHookMiddleware({ dispatch }) {
     return (next) => (action) => {
@@ -90,33 +120,6 @@ export default function createTransitionHookMiddleware({
       }
 
       switch (type) {
-        case ActionTypes.INIT:
-          // Only attach this listener once.
-          if (useBeforeUnload && !onBeforeUnload) {
-            /* istanbul ignore next: not testable with Karma */
-            onBeforeUnload = (event) => {
-              const syncResult = runHooks(hooks, null, (result) => result);
-
-              if (syncResult === true || syncResult === undefined) {
-                // An asynchronous transition hook usually means there will be
-                // a custom confirm dialog. However, we'll already be showing
-                // the before unload dialog, and there's no way to prevent the
-                // custom dialog from showing. In such cases, the application
-                // code will need to explicitly handle the null location
-                // anyway, so don't potentially show two confirmation dialogs.
-                return undefined;
-              }
-
-              const resultSafe = syncResult || '';
-
-              event.returnValue = resultSafe; // eslint-disable-line no-param-reassign
-              return resultSafe;
-            };
-
-            window.addEventListener('beforeunload', onBeforeUnload);
-          }
-
-          return next(action);
         case ActionTypes.TRANSITION:
           return runAllowTransition(hooks, payload, (allowTransition) => {
             if (!allowTransition) {
@@ -204,9 +207,8 @@ export default function createTransitionHookMiddleware({
           return undefined;
         }
         case ActionTypes.DISPOSE:
-          if (onBeforeUnload) {
+          if (hooks.length > 0 && onBeforeUnload) {
             window.removeEventListener('beforeunload', onBeforeUnload);
-            onBeforeUnload = null;
           }
 
           return next(action);
