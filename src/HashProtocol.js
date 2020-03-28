@@ -44,7 +44,7 @@ export default class HashProtocol {
     return () => window.removeEventListener('hashchange', onHashChange);
   }
 
-  transition(location) {
+  navigate(location) {
     const { action, state } = location;
 
     const push = action === 'PUSH';

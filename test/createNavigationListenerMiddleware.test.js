@@ -1,12 +1,14 @@
+import delay from 'delay';
+import pDefer from 'p-defer';
 import { createStore } from 'redux';
 
 import Actions from '../src/Actions';
 import MemoryProtocol from '../src/MemoryProtocol';
 import createHistoryEnhancer from '../src/createHistoryEnhancer';
 import locationReducer from '../src/locationReducer';
-import { shouldWarn, timeout } from './helpers';
+import { shouldWarn } from './helpers';
 
-describe('createTransitionHookMiddleware', () => {
+describe('createNavigationListenerMiddleware', () => {
   const sandbox = sinon.createSandbox();
 
   let protocol;
@@ -25,81 +27,81 @@ describe('createTransitionHookMiddleware', () => {
     sandbox.restore();
   });
 
-  describe('PUSH transitions', () => {
-    it('should allow transition on true', () => {
-      const hook = sinon.stub().returns(true);
-      store.farce.addTransitionHook(hook);
+  describe('PUSH navigations', () => {
+    it('should allow navigation on true', () => {
+      const listener = sinon.stub().returns(true);
+      store.farce.addNavigationListener(listener);
 
       store.dispatch(Actions.push('/bar'));
       expect(store.getState().pathname).to.equal('/bar');
 
-      expect(hook.firstCall.args[0]).to.include({
+      expect(listener.firstCall.args[0]).to.include({
         action: 'PUSH',
         pathname: '/bar',
       });
     });
 
-    it('should allow transition on null', () => {
-      store.farce.addTransitionHook(() => null);
+    it('should allow navigation on null', () => {
+      store.farce.addNavigationListener(() => null);
 
       store.dispatch(Actions.push('/bar'));
       expect(store.getState().pathname).to.equal('/bar');
     });
 
-    it('should block transition on false', () => {
-      store.farce.addTransitionHook(() => false);
+    it('should block navigation on false', () => {
+      store.farce.addNavigationListener(() => false);
 
       store.dispatch(Actions.push('/bar'));
       expect(store.getState().pathname).to.equal('/foo');
     });
 
     it('should fall through on null', () => {
-      const hook1 = sinon.stub().returns(null);
-      const hook2 = sinon.stub().returns(false);
+      const listener1 = sinon.stub().returns(null);
+      const listener2 = sinon.stub().returns(false);
 
-      store.farce.addTransitionHook(hook1);
-      store.farce.addTransitionHook(hook2);
+      store.farce.addNavigationListener(listener1);
+      store.farce.addNavigationListener(listener2);
 
       store.dispatch(Actions.push('/bar'));
       expect(store.getState().pathname).to.equal('/foo');
 
-      expect(hook1).to.have.been.calledOnce();
-      expect(hook2).to.have.been.calledOnce();
+      expect(listener1).to.have.been.calledOnce();
+      expect(listener2).to.have.been.calledOnce();
     });
 
     it('should not fall through on non-null', () => {
-      const hook1 = sinon.stub().returns(true);
-      const hook2 = sinon.stub().returns(false);
+      const listener1 = sinon.stub().returns(true);
+      const listener2 = sinon.stub().returns(false);
 
-      store.farce.addTransitionHook(hook1);
-      store.farce.addTransitionHook(hook2);
+      store.farce.addNavigationListener(listener1);
+      store.farce.addNavigationListener(listener2);
 
       store.dispatch(Actions.push('/bar'));
       expect(store.getState().pathname).to.equal('/bar');
 
-      expect(hook1).to.have.been.calledOnce();
-      expect(hook2).not.to.have.been.called();
+      expect(listener1).to.have.been.calledOnce();
+      expect(listener2).not.to.have.been.called();
     });
 
-    it('should warn on and ignore hooks that throw', () => {
+    it('should warn on and ignore listeners that throw', () => {
       shouldWarn(
-        'Ignoring transition hook `syncHook` that failed with `Error: foo`.',
+        'Ignoring navigation listener `syncListener` that failed with `Error: foo`.',
       );
 
-      const syncHook = () => {
+      const syncListener = () => {
         throw new Error('foo');
       };
 
-      store.farce.addTransitionHook(syncHook);
+      store.farce.addNavigationListener(syncListener);
 
       store.dispatch(Actions.push('/bar'));
       expect(store.getState().pathname).to.equal('/bar');
     });
 
-    it('should confirm and allow transition on string', () => {
+    it('should confirm and allow navigation on string', () => {
       sandbox.stub(window, 'confirm').returns(true);
 
-      store.farce.addTransitionHook(({ pathname }) => pathname);
+      store.farce.addNavigationListener(({ pathname }) => pathname);
 
       store.dispatch(Actions.push('/bar'));
       expect(store.getState().pathname).to.equal('/bar');
@@ -109,10 +111,10 @@ describe('createTransitionHookMiddleware', () => {
         .and.to.have.been.called.with('/bar');
     });
 
-    it('should confirm and block transition on string', () => {
+    it('should confirm and block navigation on string', () => {
       sandbox.stub(window, 'confirm').returns(false);
 
-      store.farce.addTransitionHook(({ pathname }) => pathname);
+      store.farce.addNavigationListener(({ pathname }) => pathname);
 
       store.dispatch(Actions.push('/bar'));
       expect(store.getState().pathname).to.equal('/foo');
@@ -122,172 +124,144 @@ describe('createTransitionHookMiddleware', () => {
         .and.to.have.been.called.with('/bar');
     });
 
-    it('should allow transition on async true', async () => {
-      let resolveHook;
-      store.farce.addTransitionHook(
-        () =>
-          new Promise((resolve) => {
-            resolveHook = resolve;
-          }),
-      );
+    it('should allow navigation on async true', async () => {
+      const deferred = pDefer();
+      store.farce.addNavigationListener(() => deferred.promise);
 
       store.dispatch(Actions.push('/bar'));
       expect(store.getState().pathname).to.equal('/foo');
 
-      resolveHook(true);
-      await timeout(10);
+      deferred.resolve(true);
+      await delay(10);
 
       expect(store.getState().pathname).to.equal('/bar');
     });
 
-    it('should block transition on async false', async () => {
-      let resolveHook;
-      store.farce.addTransitionHook(
-        () =>
-          new Promise((resolve) => {
-            resolveHook = resolve;
-          }),
-      );
+    it('should block navigation on async false', async () => {
+      const deferred = pDefer();
+      store.farce.addNavigationListener(() => deferred.promise);
 
       store.dispatch(Actions.push('/bar'));
       expect(store.getState().pathname).to.equal('/foo');
 
-      resolveHook(false);
-      await timeout(10);
+      deferred.resolve(false);
+      await delay(10);
 
       expect(store.getState().pathname).to.equal('/foo');
     });
 
-    it('should allow chaining async hooks', async () => {
-      let resolveHook1;
-      let resolveHook2;
+    it('should allow chaining async listeners', async () => {
+      const deferred1 = pDefer();
+      const deferred2 = pDefer();
 
-      store.farce.addTransitionHook(
-        () =>
-          new Promise((resolve) => {
-            resolveHook1 = resolve;
-          }),
-      );
-      store.farce.addTransitionHook(
-        () =>
-          new Promise((resolve) => {
-            resolveHook2 = resolve;
-          }),
-      );
+      store.farce.addNavigationListener(() => deferred1.promise);
+      store.farce.addNavigationListener(() => deferred2.promise);
 
       store.dispatch(Actions.push('/bar'));
       expect(store.getState().pathname).to.equal('/foo');
 
-      resolveHook1(null);
-      await timeout(10);
+      deferred1.resolve(null);
+      await delay(10);
 
       expect(store.getState().pathname).to.equal('/foo');
 
-      resolveHook2(true);
-      await timeout(10);
+      deferred2.resolve(true);
+      await delay(10);
 
       expect(store.getState().pathname).to.equal('/bar');
     });
 
-    it('should warn on and ignore async hooks that throw', async () => {
+    it('should warn on and ignore async listeners that throw', async () => {
       shouldWarn(
-        'Ignoring transition hook `asyncHook` that failed with `Error: foo`.',
+        'Ignoring navigation listener `asyncListener` that failed with `Error: foo`.',
       );
 
       // eslint-disable-next-line require-await
-      const asyncHook = async () => {
+      const asyncListener = async () => {
         throw new Error('foo');
       };
 
-      store.farce.addTransitionHook(asyncHook);
+      store.farce.addNavigationListener(asyncListener);
 
       store.dispatch(Actions.push('/bar'));
       expect(store.getState().pathname).to.equal('/foo');
 
-      await timeout(10);
+      await delay(10);
 
       expect(store.getState().pathname).to.equal('/bar');
     });
 
-    it('should allow removing hooks', () => {
-      const removeHook = store.farce.addTransitionHook(() => false);
+    it('should allow removing listeners', () => {
+      const removeNavigationListener = store.farce.addNavigationListener(
+        () => false,
+      );
 
       store.dispatch(Actions.push('/bar'));
       expect(store.getState().pathname).to.equal('/foo');
 
-      removeHook();
+      removeNavigationListener();
 
       store.dispatch(Actions.push('/bar'));
       expect(store.getState().pathname).to.equal('/bar');
     });
   });
 
-  describe('POP transitions', () => {
+  describe('POP navigations', () => {
     beforeEach(() => {
       store.dispatch(Actions.push('/bar'));
     });
 
-    it('should allow transition on true', () => {
-      const hook = sinon.stub().returns(true);
-      store.farce.addTransitionHook(hook);
+    it('should allow navigation on true', () => {
+      const listener = sinon.stub().returns(true);
+      store.farce.addNavigationListener(listener);
 
       store.dispatch(Actions.go(-1));
       expect(store.getState().pathname).to.equal('/foo');
 
-      expect(hook.firstCall.args[0]).to.include({
+      expect(listener.firstCall.args[0]).to.include({
         action: 'POP',
         pathname: '/foo',
         delta: -1,
       });
     });
 
-    it('should block transition on false', () => {
-      store.farce.addTransitionHook(() => false);
+    it('should block navigation on false', () => {
+      store.farce.addNavigationListener(() => false);
 
       store.dispatch(Actions.go(-1));
       expect(store.getState().pathname).to.equal('/bar');
     });
 
-    it('should allow transition on async true', async () => {
-      let resolveHook;
-      store.farce.addTransitionHook(
-        () =>
-          new Promise((resolve) => {
-            resolveHook = resolve;
-          }),
-      );
+    it('should allow navigation on async true', async () => {
+      const deferred = pDefer();
+      store.farce.addNavigationListener(() => deferred.promise);
 
       store.dispatch(Actions.go(-1));
       expect(store.getState().pathname).to.equal('/bar');
 
-      resolveHook(true);
-      await timeout(10);
+      deferred.resolve(true);
+      await delay(10);
 
       expect(store.getState().pathname).to.equal('/foo');
     });
 
-    it('should block transition on async false', async () => {
-      let resolveHook;
-      store.farce.addTransitionHook(
-        () =>
-          new Promise((resolve) => {
-            resolveHook = resolve;
-          }),
-      );
+    it('should block navigation on async false', async () => {
+      const deferred = pDefer();
+      store.farce.addNavigationListener(() => deferred.promise);
 
       store.dispatch(Actions.go(-1));
       expect(store.getState().pathname).to.equal('/bar');
 
-      resolveHook(false);
-      await timeout(10);
+      deferred.resolve(false);
+      await delay(10);
 
       expect(store.getState().pathname).to.equal('/bar');
     });
 
-    it('should confirm and allow transition on string', () => {
+    it('should confirm and allow navigation on string', () => {
       sandbox.stub(window, 'confirm').returns(true);
 
-      store.farce.addTransitionHook(({ pathname }) => pathname);
+      store.farce.addNavigationListener(({ pathname }) => pathname);
 
       store.dispatch(Actions.go(-1));
       expect(store.getState().pathname).to.equal('/foo');
@@ -305,7 +279,7 @@ describe('createTransitionHookMiddleware', () => {
         locationReducer,
         createHistoryEnhancer({ protocol: new MemoryProtocol('/foo') }),
       );
-      store.farce.addTransitionHook(() => false);
+      store.farce.addNavigationListener(() => false);
 
       expect(store.getState()).to.be.null();
       store.dispatch(Actions.init());
@@ -316,24 +290,18 @@ describe('createTransitionHookMiddleware', () => {
       // eslint-disable-next-line no-underscore-dangle
       const listener = protocol._listener;
 
-      let resolveListener;
+      let protocolDeferred;
 
       // eslint-disable-next-line no-underscore-dangle
       protocol._listener = async (location) => {
-        await new Promise((resolve) => {
-          resolveListener = resolve;
-        });
+        protocolDeferred = pDefer();
+        await protocolDeferred.promise;
 
         listener(location);
       };
 
-      let resolveHook;
-      store.farce.addTransitionHook(
-        () =>
-          new Promise((resolve) => {
-            resolveHook = resolve;
-          }),
-      );
+      const deferred = pDefer();
+      store.farce.addNavigationListener(() => deferred.promise);
 
       store.dispatch(Actions.go(-1));
 
@@ -341,39 +309,34 @@ describe('createTransitionHookMiddleware', () => {
       expect(protocol.init().pathname).to.equal('/foo');
       expect(store.getState().pathname).to.equal('/bar');
 
-      resolveListener();
-      await timeout(10);
+      protocolDeferred.resolve();
+      await delay(10);
 
       // Protocol rewinded.
       expect(protocol.init().pathname).to.equal('/bar');
       expect(store.getState().pathname).to.equal('/bar');
 
-      resolveHook(true);
-      await timeout(10);
+      deferred.resolve(true);
+      await delay(10);
 
-      resolveListener();
-      await timeout(10);
+      protocolDeferred.resolve();
+      await delay(10);
 
       // Protocol re-popped, update to store delayed.
       expect(protocol.init().pathname).to.equal('/foo');
       expect(store.getState().pathname).to.equal('/bar');
 
-      resolveListener();
-      await timeout(10);
+      protocolDeferred.resolve();
+      await delay(10);
 
       // Store updated.
       expect(protocol.init().pathname).to.equal('/foo');
       expect(store.getState().pathname).to.equal('/foo');
     });
 
-    it('should allow transition with null delta on true', async () => {
-      let resolveHook;
-      store.farce.addTransitionHook(
-        () =>
-          new Promise((resolve) => {
-            resolveHook = resolve;
-          }),
-      );
+    it('should allow navigation with null delta on true', async () => {
+      const deferred = pDefer();
+      store.farce.addNavigationListener(() => deferred.promise);
 
       /* eslint-disable no-underscore-dangle */
       protocol._index = 0;
@@ -384,21 +347,16 @@ describe('createTransitionHookMiddleware', () => {
       expect(protocol.init().pathname).to.equal('/foo');
       expect(store.getState().pathname).to.equal('/bar');
 
-      resolveHook(true);
-      await timeout(10);
+      deferred.resolve(true);
+      await delay(10);
 
       expect(protocol.init().pathname).to.equal('/foo');
       expect(store.getState().pathname).to.equal('/foo');
     });
 
     it('should block store update with null delta on false', async () => {
-      let resolveHook;
-      store.farce.addTransitionHook(
-        () =>
-          new Promise((resolve) => {
-            resolveHook = resolve;
-          }),
-      );
+      const deferred = pDefer();
+      store.farce.addNavigationListener(() => deferred.promise);
 
       /* eslint-disable no-underscore-dangle */
       protocol._index = 0;
@@ -408,8 +366,8 @@ describe('createTransitionHookMiddleware', () => {
       expect(protocol.init().pathname).to.equal('/foo');
       expect(store.getState().pathname).to.equal('/bar');
 
-      resolveHook(false);
-      await timeout(10);
+      deferred.resolve(false);
+      await delay(10);
 
       // These are out-of-sync now, but it's the best we can do.
       expect(protocol.init().pathname).to.equal('/foo');
@@ -417,7 +375,7 @@ describe('createTransitionHookMiddleware', () => {
     });
   });
 
-  describe('useBeforeUnload', () => {
+  describe('beforeUnload', () => {
     beforeEach(() => {
       // Get rid of the old store. We'll replace it with a new one.
       store.dispatch(Actions.dispose());
@@ -425,36 +383,57 @@ describe('createTransitionHookMiddleware', () => {
       sandbox.stub(window, 'addEventListener');
       sandbox.stub(window, 'removeEventListener');
 
-      store = createStore(
-        () => null,
-        createHistoryEnhancer({ protocol, useBeforeUnload: true }),
-      );
+      store = createStore(() => null, createHistoryEnhancer({ protocol }));
 
       store.dispatch(Actions.init());
     });
 
-    it('should manage event listener on adding and removing hook', () => {
+    it('should manage event listener', () => {
       expect(window.addEventListener).not.to.have.been.called();
-      const removeHook = store.farce.addTransitionHook(() => null);
+
+      const removeNavigationListener1 = store.farce.addNavigationListener(
+        () => null,
+        { beforeUnload: true },
+      );
       expect(window.addEventListener)
         .to.have.been.calledOnce()
         .and.to.have.been.called.with('beforeunload');
 
+      const removeNavigationListener2 = store.farce.addNavigationListener(
+        () => null,
+        { beforeUnload: true },
+      );
+      expect(window.addEventListener)
+        .to.have.been.calledOnce()
+        .and.to.have.been.called.with('beforeunload');
+
+      removeNavigationListener1();
       expect(window.removeEventListener).not.to.have.been.called();
-      removeHook();
+
+      removeNavigationListener2();
       expect(window.removeEventListener)
         .to.have.been.calledOnce()
         .and.to.have.been.called.with('beforeunload');
     });
 
     it('should remove event listener on dispose', () => {
-      store.farce.addTransitionHook(() => null);
-
+      store.farce.addNavigationListener(() => null, { beforeUnload: true });
       expect(window.removeEventListener).not.to.have.been.called();
+
       store.dispatch(Actions.dispose());
       expect(window.removeEventListener)
         .to.have.been.calledOnce()
         .and.to.have.been.called.with('beforeunload');
+    });
+
+    it('should not add event listener without beforeUnload', () => {
+      const removeNavigationListener = store.farce.addNavigationListener(
+        () => null,
+      );
+      expect(window.addEventListener).not.to.have.been.called();
+
+      removeNavigationListener();
+      expect(window.removeEventListener).not.to.have.been.called();
     });
   });
 });

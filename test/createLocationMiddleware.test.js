@@ -9,10 +9,10 @@ describe('createLocationMiddleware', () => {
 
   const dispatch = middleware()((action) => action.payload);
 
-  it('should handle location descriptors for TRANSITION', () => {
+  it('should handle location descriptors for NAVIGATE', () => {
     expect(
       dispatch({
-        type: ActionTypes.TRANSITION,
+        type: ActionTypes.NAVIGATE,
         payload: {},
       }),
     ).to.eql({

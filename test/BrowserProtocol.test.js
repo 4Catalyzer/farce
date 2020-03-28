@@ -1,5 +1,6 @@
+import delay from 'delay';
+
 import BrowserProtocol from '../src/BrowserProtocol';
-import { timeout } from './helpers';
 
 describe('BrowserProtocol', () => {
   beforeEach(() => {
@@ -29,7 +30,7 @@ describe('BrowserProtocol', () => {
     const listener = sinon.spy();
     protocol.subscribe(listener);
 
-    const barLocation = protocol.transition({
+    const barLocation = protocol.navigate({
       action: 'PUSH',
       pathname: '/bar',
       search: '?search',
@@ -54,7 +55,7 @@ describe('BrowserProtocol', () => {
     expect(barLocation.key).not.to.be.empty();
 
     expect(
-      protocol.transition({
+      protocol.navigate({
         action: 'PUSH',
         pathname: '/baz',
         search: '',
@@ -70,7 +71,7 @@ describe('BrowserProtocol', () => {
     expect(window.location.pathname).to.equal('/baz');
 
     expect(
-      protocol.transition({
+      protocol.navigate({
         action: 'REPLACE',
         pathname: '/qux',
         search: '',
@@ -82,13 +83,13 @@ describe('BrowserProtocol', () => {
       index: 2,
       delta: 0,
     });
-    await timeout(20);
+    await delay(20);
 
     expect(window.location.pathname).to.equal('/qux');
     expect(listener).not.to.have.been.called();
 
     protocol.go(-1);
-    await timeout(20);
+    await delay(20);
 
     expect(window.location).to.include({
       pathname: '/bar',
@@ -109,7 +110,7 @@ describe('BrowserProtocol', () => {
     listener.resetHistory();
 
     window.history.back();
-    await timeout(20);
+    await delay(20);
 
     expect(window.location.pathname).to.equal('/foo');
     expect(listener).to.have.been.calledOnce();
@@ -125,13 +126,13 @@ describe('BrowserProtocol', () => {
 
   it('should support subscribing and unsubscribing', async () => {
     const protocol = new BrowserProtocol();
-    protocol.transition({
+    protocol.navigate({
       action: 'PUSH',
       pathname: '/bar',
       search: '',
       hash: '',
     });
-    protocol.transition({
+    protocol.navigate({
       action: 'PUSH',
       pathname: '/baz',
       search: '',
@@ -142,7 +143,7 @@ describe('BrowserProtocol', () => {
     const unsubscribe = protocol.subscribe(listener);
 
     protocol.go(-1);
-    await timeout(20);
+    await delay(20);
 
     expect(listener).to.have.been.calledOnce();
     expect(listener.firstCall.args[0]).to.include({
@@ -154,7 +155,7 @@ describe('BrowserProtocol', () => {
     unsubscribe();
 
     protocol.go(-1);
-    await timeout(20);
+    await delay(20);
 
     expect(listener).not.to.have.been.called();
   });

@@ -4,8 +4,6 @@ _History repeats itself._
 
 Farce provides a [Redux](http://redux.js.org/) store enhancer that wraps a series of middlewares to allow controlling browser navigation by dispatching actions and to allow managing location state with the rest of your store state.
 
-Farce can also create a history object that is compatible with [history](https://github.com/ReactTraining/history) v2 for use with [React Router](https://github.com/ReactTraining/react-router) v2.
-
 [![Codecov][codecov-badge]][codecov]
 
 ## Usage
@@ -32,7 +30,7 @@ const store = createStore(
 
 store.dispatch(FarceActions.init());
 
-// To transition to a new location:
+// To navigate to a new location:
 store.dispatch(FarceActions.push('/new/path'));
 
 // To get the current location:
@@ -143,7 +141,8 @@ The `createQueryMiddleware` middleware factory creates a custom query middleware
 import qs from 'qs';
 
 const customQueryMiddleware = createQueryMiddleware({
-  parse: qs.parse, stringify: qs.stringify,
+  parse: qs.parse,
+  stringify: qs.stringify,
 });
 ```
 
@@ -181,18 +180,22 @@ If a `queryMiddleware` is applied, the location object will also contain a `quer
 store.dispatch(FarceActions.push('/foo?bar=baz#qux'));
 
 // Equivalent location descriptor object:
-store.dispatch(FarceActions.push({
-  pathname: '/foo',
-  search: '?bar=baz',
-  hash: '#qux',
-}));
+store.dispatch(
+  FarceActions.push({
+    pathname: '/foo',
+    search: '?bar=baz',
+    hash: '#qux',
+  }),
+);
 
 // Given a location object, you can override a subset of its properties:
-store.dispatch(FarceActions.replace({
-  ...location,
-  query: { the: 'new-query' },
-  hash: '#new-hash',
-}));
+store.dispatch(
+  FarceActions.replace({
+    ...location,
+    query: { the: 'new-query' },
+    hash: '#new-hash',
+  }),
+);
 ```
 
 The history enhancer adds a `farce` object as a property to the store that exposes `createHref` and `createLocation` methods. `createHref` takes a location descriptor and returns a link `href`. `createLocation` takes a location descriptor and returns the corresponding location object.
@@ -208,46 +211,40 @@ const location = store.farce.createLocation('/foo?the=query');
 // -> { pathname: '/foo', query: { the: 'query' }, ... }
 ```
 
-### Transition hooks
+### Navigation listeners
 
-The `farce` object on the store also has an `addTransitionHook` method. This method takes a transition hook function and returns a function to remove the transition hook.
+The `farce` object on the store also has an `addNavigationListener` method. This method takes a navigation listener function and an optional options object and returns a function to remove the navigation listener.
 
 ```js
-const removeTransitionHook = store.farce.addTransitionHook(location => (
-  location.pathname === '/bar' ? 'Are you sure you want to go to /bar?' : true
-));
+const removeNavigationListener = store.farce.addNavigationListener(location =>
+  location.pathname === '/bar' ? 'Are you sure you want to go to /bar?' : true,
+);
 
-// To remove the transition hook:
-removeTransitionHook();
+// To remove the navigation listener:
+removeNavigationListener();
 ```
 
-The transition hook function receives the location to which the user is attempting to navigate. This function may return:
+The navigation listener function receives the location to which the user is attempting to navigate. This function may return:
 
-- `true` to allow the transition
-- `false` to block the transition
+- `true` to allow navigation
+- `false` to block navigation
 - A string to prompt the user with that string as the message
-- A nully value to call the next transition hook and use its return value, if present, or else to allow the transition
-- A promise that resolves to any of the above values, to allow or block the transition once the promise resolves
+- A nully value to call the next navigation listener and use its return value, if present, or else to allow the navigation
+- A promise that resolves to any of the above values, to allow or block navigation once the promise resolves
 
-When creating the history enhancer, you can set the `useBeforeUnload` option to run transition hooks when the user attempts to leave the page entirely.
-
-```js
-const historyEnhancer = createHistoryEnhancer({
-  ...options,
-  useBeforeUnload: true,
-});
-```
-
-If `useBeforeUnload` is set, transition hooks will be called with a `null` location when the user attempts to leave the page. In this scenario, the transition hook must return a non-promise value.
+When adding a navigation listener, you can set the `beforeUnload` option to run the listener when the user attempts to leave the page entirely. If `beforeUnload` is set, the navigation listener will be called with a `null` location when the user attempts to leave the page. In this scenario, the navigation listener must return a non-promise value.
 
 ```js
-function transitionHook(location) {
-  if (location === null) {
-    return false;
-  }
+store.farce.addNavigationListener(
+  location => {
+    if (location === null) {
+      return false;
+    }
 
-  return asyncConfirm(location);
-}
+    return asyncConfirm(location);
+  },
+  { beforeUnload: true },
+);
 ```
 
 ### Transient state storage
@@ -274,12 +271,6 @@ const value3 = stateStorage.read(location, 'bar');
 
 `StateStorage` intentionally ignores errors. As such, it should be treated as unreliable. Do not use `StateStorage` for managing state that is critical to the operation of your application.
 
-### `history` interoperation
-
-Call `createStoreHistory` on a store enhanced with `createHistoryEnhancer` to create a history object that is API-compatible with `history` v2. This object has an additional `dispose` method for tearing down event listeners.
-
-If you don't have a store, `createHistory` will create a history object. It takes the same configuration options as `createHistoryEnhancer`.
-
 ### Minimizing bundle size
 
 The top-level `farce` package exports everything available in this library. It is unlikely that any single application will use all the features available. As such, for real applications, you should import the modules you need from `farce/lib` directly, to pull in only the code that you use.
@@ -299,9 +290,7 @@ import queryMiddleware from 'farce/lib/queryMiddleware';
 
 [build-badge]: https://img.shields.io/travis/4Catalyzer/farce/master.svg
 [build]: https://travis-ci.org/4Catalyzer/farce
-
 [npm-badge]: https://img.shields.io/npm/v/farce.svg
 [npm]: https://www.npmjs.org/package/farce
-
 [codecov-badge]: https://img.shields.io/codecov/c/github/4Catalyzer/farce/master.svg
 [codecov]: https://codecov.io/gh/4Catalyzer/farce

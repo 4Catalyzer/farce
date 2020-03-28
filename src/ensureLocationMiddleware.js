@@ -8,12 +8,12 @@ export default function ensureLocationMiddleware() {
     switch (type) {
       case ActionTypes.PUSH:
         return next({
-          type: ActionTypes.TRANSITION,
+          type: ActionTypes.NAVIGATE,
           payload: { ...ensureLocation(payload), action: 'PUSH' },
         });
       case ActionTypes.REPLACE:
         return next({
-          type: ActionTypes.TRANSITION,
+          type: ActionTypes.NAVIGATE,
           payload: { ...ensureLocation(payload), action: 'REPLACE' },
         });
       case ActionTypes.CREATE_HREF:
