@@ -24,7 +24,9 @@
     }
   },
   "lint-staged": {
-    "*.js": "eslint --fix"
+    "*.js": "eslint --fix",
+    "*.md": "prettier --write",
+    "README.md": "doctoc"
   },
   "prettier": {
     "printWidth": 79,
@@ -69,6 +71,7 @@
     "cross-env": "^7.0.2",
     "delay": "^4.3.0",
     "dirty-chai": "^2.0.1",
+    "doctoc": "^1.4.0",
     "eslint": "^6.8.0",
     "eslint-config-4catalyzer": "^1.1.1",
     "eslint-config-prettier": "^6.10.1",

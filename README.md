@@ -6,6 +6,31 @@ Farce provides a [Redux](http://redux.js.org/) store enhancer that wraps a serie
 
 [![Codecov][codecov-badge]][codecov]
 
+<!-- prettier-ignore-start -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Usage](#usage)
+- [Guide](#guide)
+  - [Installation](#installation)
+  - [Basic usage](#basic-usage)
+  - [Protocols](#protocols)
+    - [`BrowserProtocol`](#browserprotocol)
+    - [`HashProtocol`](#hashprotocol)
+    - [`ServerProtocol`](#serverprotocol)
+    - [`MemoryProtocol`](#memoryprotocol)
+  - [Middlewares](#middlewares)
+    - [`queryMiddleware` and `createQueryMiddleware`](#querymiddleware-and-createquerymiddleware)
+    - [`createBasenameMiddleware`](#createbasenamemiddleware)
+  - [Locations and location descriptors](#locations-and-location-descriptors)
+  - [Navigation listeners](#navigation-listeners)
+  - [Transient state storage](#transient-state-storage)
+  - [Minimizing bundle size](#minimizing-bundle-size)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<!-- prettier-ignore-end -->
+
 ## Usage
 
 ```js
@@ -216,8 +241,11 @@ const location = store.farce.createLocation('/foo?the=query');
 The `farce` object on the store also has an `addNavigationListener` method. This method takes a navigation listener function and an optional options object and returns a function to remove the navigation listener.
 
 ```js
-const removeNavigationListener = store.farce.addNavigationListener(location =>
-  location.pathname === '/bar' ? 'Are you sure you want to go to /bar?' : true,
+const removeNavigationListener = store.farce.addNavigationListener(
+  (location) =>
+    location.pathname === '/bar'
+      ? 'Are you sure you want to go to /bar?'
+      : true,
 );
 
 // To remove the navigation listener:
@@ -236,7 +264,7 @@ When adding a navigation listener, you can set the `beforeUnload` option to run 
 
 ```js
 store.farce.addNavigationListener(
-  location => {
+  (location) => {
     if (location === null) {
       return false;
     }
