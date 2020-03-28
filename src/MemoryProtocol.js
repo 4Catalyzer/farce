@@ -1,7 +1,7 @@
 import invariant from 'invariant';
 
-import createPath from './utils/createPath';
-import ensureLocation from './utils/ensureLocation';
+import createPath from './createPath';
+import ensureLocation from './ensureLocation';
 
 const STATE_KEY = '@@farce/state';
 

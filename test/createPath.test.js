@@ -1,4 +1,4 @@
-import createPath from '../../src/utils/createPath';
+import createPath from '../src/createPath';
 
 describe('createPath', () => {
   it('should create path using pathname, search, and hash', () => {

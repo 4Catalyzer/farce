@@ -1,11 +1,6 @@
 {
-  "extends": [
-    "4catalyzer",
-    "prettier"
-  ],
-  "plugins": [
-    "prettier"
-  ],
+  "extends": ["4catalyzer", "prettier"],
+  "plugins": ["prettier"],
   "env": {
     "browser": true
   },

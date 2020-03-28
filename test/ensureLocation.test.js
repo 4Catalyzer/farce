@@ -1,4 +1,4 @@
-import ensureLocation from '../../src/utils/ensureLocation';
+import ensureLocation from '../src/ensureLocation';
 
 describe('ensureLocation', () => {
   it('should preserve fully-defined location descriptor objects', () => {
