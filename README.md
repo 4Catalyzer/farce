@@ -265,7 +265,7 @@ When adding a navigation listener, you can set the `beforeUnload` option to run 
 ```js
 store.farce.addNavigationListener(
   (location) => {
-    if (location === null) {
+    if (!location) {
       return false;
     }
 
