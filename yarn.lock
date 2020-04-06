@@ -39,10 +39,10 @@
     text-table "^0.2.0"
     yargs "^15.0.1"
 
-"@4c/file-butler@^4.1.4":
-  version "4.1.4"
-  resolved "https://registry.yarnpkg.com/@4c/file-butler/-/file-butler-4.1.4.tgz#73099d6fa76ce89b37845a4955048a7478f11b74"
-  integrity sha512-MlIkmp4UYALx/VBxdRi3HphTjNLLAU9Hl9XHDa0n2byDmXEfAXSVk14wQsUXALzgWRmZ+zvJKeMCcbqIwZEjTg==
+"@4c/file-butler@^4.1.5":
+  version "4.1.5"
+  resolved "https://registry.yarnpkg.com/@4c/file-butler/-/file-butler-4.1.5.tgz#5b3e9b062d597e906894dd4261f291f09f008520"
+  integrity sha512-47PpEGnF7dHfhSUoDTgoNu9cOZGZVvV5VMNOi5p3zRrPcMd65XDfC+BuKnsJvlYaBDJo1xc8BE0jN+Pq4Djt6w==
   dependencies:
     "@4c/cli-core" "^2.1.3"
     cpy "^7.3.0"
@@ -51,13 +51,13 @@
     read-pkg-up "^7.0.1"
     yargs "^15.0.1"
 
-"@4c/rollout@^2.1.4":
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/@4c/rollout/-/rollout-2.1.4.tgz#26c49894f9e65e1f7c72bd12f2e28248c880d8f1"
-  integrity sha512-xZN3aH1O1pQF33YejZhPEKLm6R+8uayMbLn0jD4URR8RMUnH+xPrFRZSBMI5UW9OywnSPpWl/CKgK4ISjR+eqA==
+"@4c/rollout@^2.1.5":
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/@4c/rollout/-/rollout-2.1.5.tgz#93433a3db84f97acbc28b4b5ee6e372a0c4864a5"
+  integrity sha512-UiQwAOFXVivK34OTGH7qmLjPjutyAOX6ieWkXpg1cl2oAuonL1pq7eqrf7EqoioJ5uCbVa1t/B3TNsW5Bwx6hA==
   dependencies:
     "@4c/cli-core" "^2.1.3"
-    "@4c/file-butler" "^4.1.4"
+    "@4c/file-butler" "^4.1.5"
     chalk "^3.0.0"
     conventional-changelog "^3.0.6"
     conventional-recommended-bump "^6.0.0"
@@ -5079,10 +5079,10 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.1.6.tgz#1c00c743b433cd0a4e80758f7b64a57440d9ff00"
   integrity sha1-HADHQ7QzzQpOgHWPe2SldEDZ/wA=
 
-lint-staged@^10.0.10:
-  version "10.0.10"
-  resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-10.0.10.tgz#d14d33ee02a31a31ad36cf9aa7973fc156c461b5"
-  integrity sha512-91vNy3eYStExElLWw1Idva5lghKpFaXh9AJqjcyrJXf7AYZrThi4EhQ+GpmiHdPmJJauKhZMMSzQR1bMB90MtA==
+lint-staged@^10.1.2:
+  version "10.1.2"
+  resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-10.1.2.tgz#beaefc58037ea9e02fe7639cb323d584312a7957"
+  integrity sha512-Vtbe8rhWbJxPNlnXk6jczRh6wvAVjGg+VhELAIjLakOjTACdB4qJOD4W2R8oUXLRCqL1t9WMUsXbSlVK34A8Lg==
   dependencies:
     chalk "^3.0.0"
     commander "^4.0.1"
@@ -6304,10 +6304,10 @@ prettier-linter-helpers@^1.0.0:
   dependencies:
     fast-diff "^1.1.2"
 
-prettier@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.0.2.tgz#1ba8f3eb92231e769b7fcd7cb73ae1b6b74ade08"
-  integrity sha512-5xJQIPT8BraI7ZnaDwSbu5zLrB6vvi8hVV58yHQ+QK64qrY40dULy0HSRlQ2/2IdzeBpjhDkqdcFBnFeDEMVdg==
+prettier@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.0.3.tgz#9a06f0e94a51420e78b6925568b5bec72afe41ea"
+  integrity sha512-5qpBDBHO9fpE0zruKiTZm8Gxmz7kknO+WlQR/ivV+RMwgDw/WjOgmxLDn66MPrxq/WZPx/EgEZzh87xJO5E6Fw==
 
 private@^0.1.8:
   version "0.1.8"
