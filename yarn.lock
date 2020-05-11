@@ -51,10 +51,10 @@
     read-pkg-up "^7.0.1"
     yargs "^15.0.1"
 
-"@4c/rollout@^2.1.7":
-  version "2.1.7"
-  resolved "https://registry.yarnpkg.com/@4c/rollout/-/rollout-2.1.7.tgz#717ba0953c50bf0b57bac74f106003da27e9481d"
-  integrity sha512-Nlx0mmsRfXWJXGlq/IPfDCZJC5BhAn95GhU/NDu4Hji0CuwNVY/jeO0zfk9GCRb8E0/f0a4anf1vLSi0ZQPxQg==
+"@4c/rollout@^2.1.9":
+  version "2.1.9"
+  resolved "https://registry.yarnpkg.com/@4c/rollout/-/rollout-2.1.9.tgz#a6a80d6159f1b6995ba12749456e0553a88cf35c"
+  integrity sha512-5p3gAeMyzxhSKOL35I+zzlobqb6F/Ky9SsTdsTqnkdG3VEBwqYarBKbo3So1h3d0EPmSqFAgG6kZXwW62RYaxg==
   dependencies:
     "@4c/cli-core" "^2.1.5"
     "@4c/file-butler" "^4.1.7"
@@ -4902,10 +4902,10 @@ karma-webpack@^4.0.2:
     source-map "^0.7.3"
     webpack-dev-middleware "^3.7.0"
 
-karma@^5.0.4:
-  version "5.0.4"
-  resolved "https://registry.yarnpkg.com/karma/-/karma-5.0.4.tgz#b374a1e541ad66da668460b99c6faf20cfffc97a"
-  integrity sha512-UGqTe2LBiGQBXRN+Fygeiq63tbfOX45639SKSbPkLpARwnxROWJZg+froGkpHxr84FXCe8UGCf+1PITM6frT5w==
+karma@^5.0.5:
+  version "5.0.5"
+  resolved "https://registry.yarnpkg.com/karma/-/karma-5.0.5.tgz#f7716f459f354734a7856ef9ed67fe0a38270aa4"
+  integrity sha512-Q4Su7kNwkTgqS+KbSCYgH0p4a/0JIxVLyp7qKNV7vgPNhIF4kIoh0GlUfMKpw67BrR3hgPQSJoxgF7xnzUtPpg==
   dependencies:
     body-parser "^1.16.1"
     braces "^3.0.2"
