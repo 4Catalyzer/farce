@@ -91,7 +91,7 @@
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^4.0.2",
     "lint-staged": "^10.2.9",
-    "mocha": "^7.2.0",
+    "mocha": "^8.0.1",
     "p-defer": "^3.0.0",
     "prettier": "^2.0.5",
     "rimraf": "^3.0.2",
