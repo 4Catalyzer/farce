@@ -51,10 +51,10 @@
     read-pkg-up "^7.0.1"
     yargs "^15.0.1"
 
-"@4c/rollout@^2.1.9":
-  version "2.1.9"
-  resolved "https://registry.yarnpkg.com/@4c/rollout/-/rollout-2.1.9.tgz#a6a80d6159f1b6995ba12749456e0553a88cf35c"
-  integrity sha512-5p3gAeMyzxhSKOL35I+zzlobqb6F/Ky9SsTdsTqnkdG3VEBwqYarBKbo3So1h3d0EPmSqFAgG6kZXwW62RYaxg==
+"@4c/rollout@^2.1.10":
+  version "2.1.10"
+  resolved "https://registry.yarnpkg.com/@4c/rollout/-/rollout-2.1.10.tgz#f7eae1d55ba7ebcd7b28493ba32bbfd3d8be5a67"
+  integrity sha512-7j6sTILNUwZEhA7KR0pYfn9Kex96531jgLUDcuVOtxTFEvCfkQlmuY2YR5DyEBwUk1GeMjTxj+E47lRClaLA9w==
   dependencies:
     "@4c/cli-core" "^2.1.5"
     "@4c/file-butler" "^4.1.7"
