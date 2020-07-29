@@ -2,14 +2,18 @@
   "name": "playground",
   "version": "0.1.0",
   "private": true,
-  "devDependencies": {
-    "react-scripts": "1.1.4"
-  },
   "dependencies": {
-    "farce": "^0.2.5",
-    "redux": "^3.7.2"
+    "farce": "^0.4.1",
+    "react-scripts": "3.4.1",
+    "redux": "^4.0.5"
   },
   "scripts": {
     "start": "react-scripts start"
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

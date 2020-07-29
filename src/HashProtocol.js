@@ -1,10 +1,8 @@
-import off from 'dom-helpers/events/off';
-import on from 'dom-helpers/events/on';
 import invariant from 'invariant';
 
 import StateStorage from './StateStorage';
-import createPath from './utils/createPath';
-import ensureLocation from './utils/ensureLocation';
+import createPath from './createPath';
+import ensureLocation from './ensureLocation';
 
 export default class HashProtocol {
   constructor() {
@@ -42,11 +40,11 @@ export default class HashProtocol {
       listener(this.init());
     };
 
-    on(window, 'hashchange', onHashChange);
-    return () => off(window, 'hashchange', onHashChange);
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
   }
 
-  transition(location) {
+  navigate(location) {
     const { action, state } = location;
 
     const push = action === 'PUSH';

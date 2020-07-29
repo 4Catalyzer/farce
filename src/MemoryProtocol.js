@@ -1,7 +1,7 @@
 import invariant from 'invariant';
 
-import createPath from './utils/createPath';
-import ensureLocation from './utils/ensureLocation';
+import createPath from './createPath';
+import ensureLocation from './ensureLocation';
 
 const STATE_KEY = '@@farce/state';
 
@@ -18,9 +18,7 @@ export default class MemoryProtocol {
       this._index = 0;
     }
 
-    this._keyPrefix = Math.random()
-      .toString(36)
-      .slice(2, 8);
+    this._keyPrefix = Math.random().toString(36).slice(2, 8);
     this._keyIndex = 0;
 
     this._listener = null;
@@ -51,7 +49,7 @@ export default class MemoryProtocol {
     };
   }
 
-  transition(location) {
+  navigate(location) {
     // Match BrowserProtocol here in only saving these fields.
     const { action, pathname, search, hash, state } = location;
 

@@ -1,6 +1,6 @@
-import HashProtocol from '../src/HashProtocol';
+import delay from 'delay';
 
-import { timeout } from './helpers';
+import HashProtocol from '../src/HashProtocol';
 
 describe('HashProtocol', () => {
   beforeEach(() => {
@@ -32,7 +32,7 @@ describe('HashProtocol', () => {
     const listener = sinon.spy();
     protocol.subscribe(listener);
 
-    const barLocation = protocol.transition({
+    const barLocation = protocol.navigate({
       action: 'PUSH',
       pathname: '/bar',
       search: '?search',
@@ -52,7 +52,7 @@ describe('HashProtocol', () => {
     });
 
     expect(
-      protocol.transition({
+      protocol.navigate({
         action: 'PUSH',
         pathname: '/baz',
         search: '',
@@ -68,7 +68,7 @@ describe('HashProtocol', () => {
     expect(window.location.hash).to.equal('#/baz');
 
     expect(
-      protocol.transition({
+      protocol.navigate({
         action: 'REPLACE',
         pathname: '/qux',
         search: '',
@@ -80,7 +80,7 @@ describe('HashProtocol', () => {
       index: 2,
       delta: 0,
     });
-    await timeout(20);
+    await delay(20);
 
     expect(window.location.hash).to.equal('#/qux');
     expect(listener).not.to.have.been.called();
@@ -91,7 +91,7 @@ describe('HashProtocol', () => {
     }
 
     protocol.go(-1);
-    await timeout(20);
+    await delay(20);
 
     expect(window.location.hash).to.equal('#/bar?search#hash');
     expect(listener).to.have.been.calledOnce();
@@ -107,7 +107,7 @@ describe('HashProtocol', () => {
     listener.resetHistory();
 
     window.history.back();
-    await timeout(20);
+    await delay(20);
 
     expect(window.location.hash).to.be.empty();
     expect(listener).to.have.been.calledOnce();
@@ -123,13 +123,13 @@ describe('HashProtocol', () => {
 
   it('should support subscribing and unsubscribing', async () => {
     const protocol = new HashProtocol('/foo');
-    protocol.transition({
+    protocol.navigate({
       action: 'PUSH',
       pathname: '/bar',
       search: '',
       hash: '',
     });
-    protocol.transition({
+    protocol.navigate({
       action: 'PUSH',
       pathname: '/baz',
       search: '',
@@ -145,7 +145,7 @@ describe('HashProtocol', () => {
     }
 
     protocol.go(-1);
-    await timeout(20);
+    await delay(20);
 
     expect(listener).to.have.been.calledOnce();
     expect(listener.firstCall.args[0]).to.include({
@@ -157,7 +157,7 @@ describe('HashProtocol', () => {
     unsubscribe();
 
     protocol.go(-1);
-    await timeout(20);
+    await delay(20);
 
     expect(listener).not.to.have.been.called();
   });

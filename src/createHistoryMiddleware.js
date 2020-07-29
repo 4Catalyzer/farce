@@ -9,19 +9,19 @@ function updateLocation(location) {
 
 export default function createHistoryMiddleware(protocol) {
   return function historyMiddleware() {
-    return next => {
-      const dispose = protocol.subscribe(location => {
+    return (next) => {
+      const dispose = protocol.subscribe((location) => {
         next(updateLocation(location));
       });
 
-      return action => {
+      return (action) => {
         const { type, payload } = action;
 
         switch (type) {
           case ActionTypes.INIT:
             return next(updateLocation(protocol.init()));
-          case ActionTypes.TRANSITION:
-            return next(updateLocation(protocol.transition(payload)));
+          case ActionTypes.NAVIGATE:
+            return next(updateLocation(protocol.navigate(payload)));
           case ActionTypes.GO:
             protocol.go(payload);
             return null;

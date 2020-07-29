@@ -1,8 +1,8 @@
-import FarceActions from 'farce/lib/Actions';
-import BrowserProtocol from 'farce/lib/BrowserProtocol';
-import createHistoryEnhancer from 'farce/lib/createHistoryEnhancer';
-import locationReducer from 'farce/lib/locationReducer';
-import queryMiddleware from 'farce/lib/queryMiddleware';
+import FarceActions from 'farce/Actions';
+import BrowserProtocol from 'farce/BrowserProtocol';
+import createHistoryEnhancer from 'farce/createHistoryEnhancer';
+import locationReducer from 'farce/locationReducer';
+import queryMiddleware from 'farce/queryMiddleware';
 import { bindActionCreators, combineReducers, createStore } from 'redux';
 
 const store = createStore(

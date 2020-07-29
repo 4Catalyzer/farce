@@ -1,14 +1,10 @@
-import off from 'dom-helpers/events/off';
-import on from 'dom-helpers/events/on';
 import invariant from 'invariant';
 
-import createPath from './utils/createPath';
+import createPath from './createPath';
 
 export default class BrowserProtocol {
   constructor() {
-    this._keyPrefix = Math.random()
-      .toString(36)
-      .slice(2, 8);
+    this._keyPrefix = Math.random().toString(36).slice(2, 8);
     this._keyIndex = 0;
 
     this._index = null;
@@ -41,11 +37,11 @@ export default class BrowserProtocol {
     // TODO: On most versions of IE, we need a hashChange listener for hash-
     // only changes.
 
-    on(window, 'popstate', onPopState);
-    return () => off(window, 'popstate', onPopState);
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
   }
 
-  transition(location) {
+  navigate(location) {
     const { action, state } = location;
 
     const push = action === 'PUSH';

@@ -20,7 +20,7 @@ describe('MemoryProtocol', () => {
     const listener = sinon.spy();
     protocol.subscribe(listener);
 
-    const barLocation = protocol.transition({
+    const barLocation = protocol.navigate({
       action: 'PUSH',
       pathname: '/bar',
       state: { the: 'state' },
@@ -35,17 +35,17 @@ describe('MemoryProtocol', () => {
     });
     expect(barLocation.key).not.to.be.empty();
 
-    expect(
-      protocol.transition({ action: 'PUSH', pathname: '/baz' }),
-    ).to.include({
-      action: 'PUSH',
-      pathname: '/baz',
-      index: 2,
-      delta: 1,
-    });
+    expect(protocol.navigate({ action: 'PUSH', pathname: '/baz' })).to.include(
+      {
+        action: 'PUSH',
+        pathname: '/baz',
+        index: 2,
+        delta: 1,
+      },
+    );
 
     expect(
-      protocol.transition({ action: 'REPLACE', pathname: '/qux' }),
+      protocol.navigate({ action: 'REPLACE', pathname: '/qux' }),
     ).to.include({
       action: 'REPLACE',
       pathname: '/qux',
@@ -70,8 +70,8 @@ describe('MemoryProtocol', () => {
 
   it('should support subscribing and unsubscribing', () => {
     const protocol = new MemoryProtocol('/foo');
-    protocol.transition({ action: 'PUSH', pathname: '/bar' });
-    protocol.transition({ action: 'PUSH', pathname: '/baz' });
+    protocol.navigate({ action: 'PUSH', pathname: '/bar' });
+    protocol.navigate({ action: 'PUSH', pathname: '/baz' });
 
     const listener = sinon.spy();
     const unsubscribe = protocol.subscribe(listener);
@@ -94,8 +94,8 @@ describe('MemoryProtocol', () => {
 
   it('should respect stack bounds', () => {
     const protocol = new MemoryProtocol('/foo');
-    protocol.transition({ action: 'PUSH', pathname: '/bar' });
-    protocol.transition({ action: 'PUSH', pathname: '/baz' });
+    protocol.navigate({ action: 'PUSH', pathname: '/bar' });
+    protocol.navigate({ action: 'PUSH', pathname: '/baz' });
 
     const listener = sinon.spy();
     protocol.subscribe(listener);
@@ -131,10 +131,10 @@ describe('MemoryProtocol', () => {
 
   it('should reset forward entries on push', () => {
     const protocol = new MemoryProtocol('/foo');
-    protocol.transition({ action: 'PUSH', pathname: '/bar' });
-    protocol.transition({ action: 'PUSH', pathname: '/baz' });
+    protocol.navigate({ action: 'PUSH', pathname: '/bar' });
+    protocol.navigate({ action: 'PUSH', pathname: '/baz' });
     protocol.go(-2);
-    protocol.transition({ action: 'REPLACE', pathname: '/qux' });
+    protocol.navigate({ action: 'REPLACE', pathname: '/qux' });
 
     const listener = sinon.spy();
     protocol.subscribe(listener);
@@ -151,10 +151,10 @@ describe('MemoryProtocol', () => {
 
   it('should not reset forward entries on replace', () => {
     const protocol = new MemoryProtocol('/foo');
-    protocol.transition({ action: 'PUSH', pathname: '/bar' });
-    protocol.transition({ action: 'PUSH', pathname: '/baz' });
+    protocol.navigate({ action: 'PUSH', pathname: '/bar' });
+    protocol.navigate({ action: 'PUSH', pathname: '/baz' });
     protocol.go(-2);
-    protocol.transition({ action: 'PUSH', pathname: '/qux' });
+    protocol.navigate({ action: 'PUSH', pathname: '/qux' });
 
     const listener = sinon.spy();
     protocol.subscribe(listener);
@@ -187,8 +187,8 @@ describe('MemoryProtocol', () => {
         pathname: '/foo',
       });
 
-      protocol1.transition({ action: 'PUSH', pathname: '/bar' });
-      protocol1.transition({ action: 'PUSH', pathname: '/baz' });
+      protocol1.navigate({ action: 'PUSH', pathname: '/bar' });
+      protocol1.navigate({ action: 'PUSH', pathname: '/baz' });
       protocol1.go(-1);
 
       const protocol2 = new MemoryProtocol('/foo', { persistent: true });

@@ -5,17 +5,17 @@ export default {
     type: ActionTypes.INIT,
   }),
 
-  push: location => ({
+  push: (location) => ({
     type: ActionTypes.PUSH,
     payload: location,
   }),
 
-  replace: location => ({
+  replace: (location) => ({
     type: ActionTypes.REPLACE,
     payload: location,
   }),
 
-  go: delta => ({
+  go: (delta) => ({
     type: ActionTypes.GO,
     payload: delta,
   }),

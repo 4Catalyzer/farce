@@ -2,7 +2,7 @@ import { applyMiddleware, bindActionCreators } from 'redux';
 
 import ActionTypes from './ActionTypes';
 import createHistoryMiddleware from './createHistoryMiddleware';
-import createTransitionHookMiddleware from './createTransitionHookMiddleware';
+import createNavigationListenerMiddleware from './createNavigationListenerMiddleware';
 import ensureLocationMiddleware from './ensureLocationMiddleware';
 
 function createHref(location) {
@@ -19,24 +19,18 @@ function createLocation(location) {
   };
 }
 
-export default function createHistoryEnhancer({
-  protocol,
-  middlewares = [],
-  useBeforeUnload,
-}) {
+export default function createHistoryEnhancer({ protocol, middlewares = [] }) {
   return function historyEnhancer(createStore) {
     return (...args) => {
-      const transitionHookMiddleware = createTransitionHookMiddleware({
-        useBeforeUnload,
-      });
+      const navigationListenerMiddleware = createNavigationListenerMiddleware();
 
       const middlewareEnhancer = applyMiddleware(
         ensureLocationMiddleware,
-        transitionHookMiddleware,
+        navigationListenerMiddleware,
         ...middlewares,
         createHistoryMiddleware(protocol),
         ...[...middlewares].reverse(),
-        transitionHookMiddleware,
+        navigationListenerMiddleware,
       );
 
       const store = middlewareEnhancer(createStore)(...args);
@@ -49,7 +43,7 @@ export default function createHistoryEnhancer({
         ...store,
         farce: {
           ...boundActionCreators,
-          addTransitionHook: transitionHookMiddleware.addHook,
+          addNavigationListener: navigationListenerMiddleware.addListener,
         },
       };
     };

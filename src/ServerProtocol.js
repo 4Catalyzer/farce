@@ -1,5 +1,5 @@
-import createPath from './utils/createPath';
-import ensureLocation from './utils/ensureLocation';
+import createPath from './createPath';
+import ensureLocation from './ensureLocation';
 
 function noop() {}
 
