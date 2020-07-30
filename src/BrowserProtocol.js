@@ -35,7 +35,7 @@ export default class BrowserProtocol {
     };
 
     // TODO: On most versions of IE, we need a hashChange listener for hash-
-    // only changes.
+    //  only changes.
 
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);

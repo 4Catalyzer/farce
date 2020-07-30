@@ -1,19 +1,14 @@
 {
   "compilerOptions": {
     "forceConsistentCasingInFileNames": true,
-    "jsx": "react",
-    "lib": ["es2016", "dom", "esnext.asynciterable"],
+    "lib": ["es2016"],
     "module": "commonjs",
-    "noImplicitAny": true,
-    "noImplicitThis": true,
     "strict": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
     "types": [],
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "found": ["."]
+      "farce": ["."]
     }
   }
 }

@@ -223,7 +223,7 @@ store.dispatch(
 );
 ```
 
-The history enhancer adds a `farce` object as a property to the store that exposes `createHref` and `createLocation` methods. `createHref` takes a location descriptor and returns a link `href`. `createLocation` takes a location descriptor and returns the corresponding location object.
+The history enhancer adds a `farce` object as a property to the store that exposes `createHref` and `createLocation` methods. `createHref` takes a location descriptor and returns a link `href`. `createLocation` takes a location descriptor and returns a fully-populated location descriptor object.
 
 ```js
 const href = store.farce.createHref({
