@@ -1,4 +1,4 @@
-import '@babel/polyfill';
+import 'regenerator-runtime/runtime';
 
 import dirtyChai from 'dirty-chai';
 

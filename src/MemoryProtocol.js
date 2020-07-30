@@ -49,6 +49,14 @@ export default class MemoryProtocol {
     };
   }
 
+  subscribe(listener) {
+    this._listener = listener;
+
+    return () => {
+      this._listener = null;
+    };
+  }
+
   navigate(location) {
     // Match BrowserProtocol here in only saving these fields.
     const { action, pathname, search, hash, state } = location;
@@ -113,13 +121,5 @@ export default class MemoryProtocol {
 
   createHref(location) {
     return createPath(location);
-  }
-
-  subscribe(listener) {
-    this._listener = listener;
-
-    return () => {
-      this._listener = null;
-    };
   }
 }
