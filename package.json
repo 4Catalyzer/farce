@@ -28,7 +28,7 @@
     "format": "4c format --prettier-ignore .eslintignore .",
     "lint": "4c lint --prettier-ignore .eslintignore .",
     "prepublish": "npm run build",
-    "release": "4c rollout",
+    "release": "4c release",
     "tdd": "cross-env NODE_ENV=test karma start",
     "test": "npm run lint && npm run test:ts && npm run testonly",
     "test:ts": "dtslint types",
