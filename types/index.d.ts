@@ -59,21 +59,13 @@ export interface Location<TState = any> {
 /**
  * Location descriptor object used in #push and #replace.
  */
-export interface BaseLocationDescriptorObject {
+export interface LocationDescriptorObject {
   pathname: Location['pathname'];
   query?: QueryDescriptor;
   search?: Location['search'];
   hash?: Location['hash'];
   state?: Location['state'];
 }
-
-// Additional location descriptor object types from middlewares.
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface AdditionalLocationDescriptorObjectTypes {}
-
-export type LocationDescriptorObject =
-  | BaseLocationDescriptorObject
-  | AdditionalLocationDescriptorObjectTypes[keyof AdditionalLocationDescriptorObjectTypes];
 
 /**
  * Location descriptor string:
@@ -88,7 +80,16 @@ export type LocationDescriptorObject =
  *
  * https://github.com/4Catalyzer/farce#locations-and-location-descriptors
  */
-export type LocationDescriptor = LocationDescriptorObject | string;
+export type LocationDescriptorString = string;
+
+// Using an interface allows consumers to use object merging to add other
+//  location descriptor types.
+export interface LocationDescriptorTypes {
+  object: LocationDescriptorObject;
+  string: LocationDescriptorString;
+}
+
+export type LocationDescriptor = LocationDescriptorTypes[keyof LocationDescriptorTypes];
 
 export interface HistoryEnhancerOptions {
   protocol: Protocol;
