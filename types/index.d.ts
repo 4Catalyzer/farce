@@ -59,13 +59,21 @@ export interface Location<TState = any> {
 /**
  * Location descriptor object used in #push and #replace.
  */
-export interface LocationDescriptorObject {
+export interface BaseLocationDescriptorObject {
   pathname: Location['pathname'];
   query?: QueryDescriptor;
   search?: Location['search'];
   hash?: Location['hash'];
   state?: Location['state'];
 }
+
+// Additional location descriptor object types from middlewares.
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface AdditionalLocationDescriptorObjectTypes {}
+
+export type LocationDescriptorObject =
+  | BaseLocationDescriptorObject
+  | AdditionalLocationDescriptorObjectTypes[keyof AdditionalLocationDescriptorObjectTypes];
 
 /**
  * Location descriptor string:
