@@ -80,7 +80,16 @@ export interface LocationDescriptorObject {
  *
  * https://github.com/4Catalyzer/farce#locations-and-location-descriptors
  */
-export type LocationDescriptor = LocationDescriptorObject | string;
+export type LocationDescriptorString = string;
+
+// Using an interface allows consumers to use object merging to add other
+//  location descriptor types.
+export interface LocationDescriptorTypes {
+  object: LocationDescriptorObject;
+  string: LocationDescriptorString;
+}
+
+export type LocationDescriptor = LocationDescriptorTypes[keyof LocationDescriptorTypes];
 
 export interface HistoryEnhancerOptions {
   protocol: Protocol;
