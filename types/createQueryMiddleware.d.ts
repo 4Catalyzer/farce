@@ -2,5 +2,5 @@
 
 export {
   createQueryMiddleware as default,
-  QueryMiddlewareConfig,
+  QueryMiddlewareOptions,
 } from 'farce';

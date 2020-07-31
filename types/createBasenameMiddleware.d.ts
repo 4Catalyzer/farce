@@ -2,5 +2,5 @@
 
 export {
   createBasenameMiddleware as default,
-  BasenameMiddlewareConfig,
+  BasenameMiddlewareOptions,
 } from 'farce';

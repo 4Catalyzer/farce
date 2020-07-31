@@ -209,23 +209,23 @@ export class MemoryProtocol extends ProtocolBase {
   );
 }
 
-export interface QueryMiddlewareConfig {
+export interface QueryMiddlewareOptions {
   stringify(query: QueryDescriptor): string;
   parse(str: string): Query;
 }
 
 export function createQueryMiddleware(
-  config: QueryMiddlewareConfig,
+  options: QueryMiddlewareOptions,
 ): Middleware;
 
 export const queryMiddleware: Middleware;
 
-export interface BasenameMiddlewareConfig {
+export interface BasenameMiddlewareOptions {
   basename: string;
 }
 
 export function createBasenameMiddleware(
-  config: BasenameMiddlewareConfig,
+  options: BasenameMiddlewareOptions,
 ): Middleware;
 
 export const locationReducer: Reducer<Location>;
