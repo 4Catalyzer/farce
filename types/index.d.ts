@@ -67,6 +67,19 @@ export interface LocationDescriptorObject {
   state?: Location['state'];
 }
 
+/**
+ * Location descriptor string:
+ *  store.dispatch(FarceActions.push('/foo?bar=baz#qux'));
+ *
+ * Equivalent location descriptor object:
+ *    store.dispatch(FarceActions.push({
+ *     pathname: '/foo',
+ *     search: '?bar=baz',
+ *     hash: '#qux',
+ *   }));
+ *
+ * https://github.com/4Catalyzer/farce#locations-and-location-descriptors
+ */
 export type LocationDescriptor = LocationDescriptorObject | string;
 
 export interface HistoryEnhancerOptions {
@@ -83,22 +96,39 @@ export type NavigationListenerResult =
   | NavigationListenerSyncResult
   | Promise<NavigationListenerSyncResult>;
 
+/**
+ * The navigation listener function receives the location to which the user
+ * is attempting to navigate.
+ *
+ * This function may return:
+ *  - true to allow navigation
+ *  - false to block navigation
+ *  - A string to prompt the user with that string as the message
+ *  - A nully value to call the next navigation and use its return value, if
+ *    present, or else to allow navigation
+ *  - A promise that resolves to any of the above values, to allow or block
+ *    navigation once the promise resolves
+ *
+ * @see https://github.com/4Catalyzer/farce#navigation-listeners
+ */
 export interface NavigationListener {
   (
     location: Location | LocationDescriptorObject | null,
-    options?: NavigationListenerOptions,
   ): NavigationListenerResult;
 }
 
-export interface Farce {
+export interface FarceStoreExtension {
   createHref: (location: LocationDescriptor) => string;
   createLocation: (location: LocationDescriptor) => LocationDescriptorObject;
-  addNavigationListener: (listener: NavigationListener) => () => void;
+  addNavigationListener: (
+    listener: NavigationListener,
+    options?: NavigationListenerOptions,
+  ) => () => void;
 }
 
 export function createHistoryEnhancer(
   options: HistoryEnhancerOptions,
-): StoreEnhancer<{ farce: Farce }>;
+): StoreEnhancer<{ farce: FarceStoreExtension }>;
 
 export const ActionTypes: {
   INIT: '@@farce/INIT';
@@ -179,29 +209,29 @@ export class MemoryProtocol extends ProtocolBase {
   );
 }
 
-export interface QueryMiddlewareConfig {
+export interface QueryMiddlewareOptions {
   stringify(query: QueryDescriptor): string;
   parse(str: string): Query;
 }
 
 export function createQueryMiddleware(
-  config: QueryMiddlewareConfig,
+  options: QueryMiddlewareOptions,
 ): Middleware;
 
 export const queryMiddleware: Middleware;
 
-export interface BasenameMiddlewareConfig {
+export interface BasenameMiddlewareOptions {
   basename: string;
 }
 
 export function createBasenameMiddleware(
-  config: BasenameMiddlewareConfig,
+  options: BasenameMiddlewareOptions,
 ): Middleware;
 
 export const locationReducer: Reducer<Location>;
 
 export class StateStorage {
-  constructor(farce: Farce, namespace: string);
+  constructor(farce: FarceStoreExtension, namespace: string);
 
   read(location: Location, key: string | null): any;
 
