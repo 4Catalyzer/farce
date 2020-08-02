@@ -151,27 +151,42 @@ export const ActionTypes: {
   DISPOSE: '@@farce/DISPOSE';
 };
 
-interface Action<TAction extends keyof typeof ActionTypes> {
-  type: typeof ActionTypes[TAction];
+export interface InitAction {
+  type: typeof ActionTypes['INIT'];
 }
 
-interface ActionWithPayload<
-  TAction extends keyof typeof ActionTypes,
-  TPayload
-> extends Action<TAction> {
-  payload: TPayload;
+export interface PushAction {
+  type: typeof ActionTypes['PUSH'];
+  payload: LocationDescriptor;
 }
+
+export interface ReplaceAction {
+  type: typeof ActionTypes['REPLACE'];
+  payload: LocationDescriptor;
+}
+
+export interface GoAction {
+  type: typeof ActionTypes['GO'];
+  payload: number;
+}
+
+export interface DisposeAction {
+  type: typeof ActionTypes['DISPOSE'];
+}
+
+export type Action =
+  | InitAction
+  | PushAction
+  | ReplaceAction
+  | GoAction
+  | DisposeAction;
 
 export const Actions: {
-  init(): Action<'INIT'>;
-  push(
-    location: LocationDescriptor,
-  ): ActionWithPayload<'PUSH', LocationDescriptor>;
-  replace(
-    location: LocationDescriptor,
-  ): ActionWithPayload<'REPLACE', LocationDescriptor>;
-  go(delta: number): ActionWithPayload<'GO', number>;
-  dispose(): Action<'DISPOSE'>;
+  init(): InitAction;
+  push(location: LocationDescriptor): PushAction;
+  replace(location: LocationDescriptor): ReplaceAction;
+  go(delta: number): GoAction;
+  dispose(): DisposeAction;
 };
 
 export interface Protocol {
@@ -237,7 +252,7 @@ export function createBasenameMiddleware(
   options: BasenameMiddlewareOptions,
 ): Middleware;
 
-export const locationReducer: Reducer<Location>;
+export const locationReducer: Reducer<Location, Action>;
 
 export class StateStorage {
   constructor(farce: FarceStoreExtension, namespace: string);
