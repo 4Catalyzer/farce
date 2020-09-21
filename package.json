@@ -56,8 +56,8 @@
     "@4c/cli": "^2.1.11",
     "@4c/prettier-config": "^1.1.0",
     "@babel/core": "^7.11.6",
-    "@typescript-eslint/eslint-plugin": "^4.1.0",
-    "@typescript-eslint/parser": "^4.1.0",
+    "@typescript-eslint/eslint-plugin": "^4.1.1",
+    "@typescript-eslint/parser": "^4.1.1",
     "babel-loader": "^8.1.0",
     "babel-plugin-add-module-exports": "^1.0.4",
     "babel-plugin-istanbul": "^6.0.0",
@@ -69,7 +69,7 @@
     "delay": "^4.4.0",
     "dirty-chai": "^2.0.1",
     "doctoc": "^1.4.0",
-    "dtslint": "^4.0.0",
+    "dtslint": "^4.0.2",
     "eslint-config-4catalyzer": "^1.1.3",
     "eslint-config-4catalyzer-typescript": "^2.0.4",
     "eslint-config-prettier": "^6.11.0",
@@ -85,15 +85,15 @@
     "karma-sinon-chai": "^2.0.2",
     "karma-sourcemap-loader": "^0.3.8",
     "karma-webpack": "^4.0.2",
-    "lint-staged": "^10.3.0",
+    "lint-staged": "^10.4.0",
     "mocha": "^8.1.3",
     "p-defer": "^3.0.0",
-    "prettier": "^2.1.1",
+    "prettier": "^2.1.2",
     "regenerator-runtime": "^0.13.7",
     "rimraf": "^3.0.2",
     "sinon": "^9.0.3",
     "sinon-chai": "^3.5.0",
-    "webpack": "^4.44.1"
+    "webpack": "^4.44.2"
   },
   "publishConfig": {
     "directory": "lib"
