@@ -68,7 +68,7 @@
     "cross-env": "^7.0.3",
     "delay": "^4.4.0",
     "dirty-chai": "^2.0.1",
-    "doctoc": "^1.4.0",
+    "doctoc": "^2.1.0",
     "dtslint": "^4.0.6",
     "eslint-config-4catalyzer": "^1.1.5",
     "eslint-config-4catalyzer-typescript": "^3.0.2",
