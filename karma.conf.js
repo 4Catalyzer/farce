@@ -4,12 +4,12 @@ module.exports = (config) => {
   const { env } = process;
 
   config.set({
-    frameworks: ['mocha', 'sinon-chai'],
+    frameworks: ['mocha', 'webpack', 'sinon-chai'],
 
-    files: ['test/index.js'],
+    files: ['test/index.js', { pattern: 'test/**/*.test.js', watched: false }],
 
     preprocessors: {
-      'test/index.js': ['webpack', 'sourcemap'],
+      'test/**.js': ['webpack', 'sourcemap'],
     },
 
     webpack: {
@@ -21,8 +21,7 @@ module.exports = (config) => {
       },
       plugins: [
         new webpack.DefinePlugin({
-          'process.env.NODE_ENV': JSON.stringify('test'),
-          '__DEV__': true,
+          __DEV__: true,
         }),
       ],
     },
@@ -49,6 +48,6 @@ module.exports = (config) => {
       },
     },
 
-    browsers: env.BROWSER ? env.BROWSER.split(',') : ['Chrome', 'Firefox'],
+    browsers: env.BROWSER ? env.BROWSER.split(',') : ['Chrome'],
   });
 };

@@ -1,5 +1,3 @@
-import 'regenerator-runtime/runtime';
-
 import dirtyChai from 'dirty-chai';
 
 global.chai.use(dirtyChai);

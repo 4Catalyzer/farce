@@ -1,0 +1,23 @@
+name: Build and test
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: ['ChromeCi', 'Firefox']
+        node-version: [16.x]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: yarn install --frozen-lockfile
+      - env:
+          BROWSER: ${{ matrix.browser }}
+        run: yarn test --coverage
+      - run: node_modules/.bin/codecov
