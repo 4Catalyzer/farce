@@ -3,7 +3,6 @@ module.exports = (api) => ({
     [
       '@4c',
       {
-        targets: {},
         modules: api.env() === 'esm' ? false : 'commonjs',
       },
     ],

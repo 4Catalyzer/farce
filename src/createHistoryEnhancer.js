@@ -22,7 +22,8 @@ function createLocation(location) {
 export default function createHistoryEnhancer({ protocol, middlewares = [] }) {
   return function historyEnhancer(createStore) {
     return (...args) => {
-      const navigationListenerMiddleware = createNavigationListenerMiddleware();
+      const navigationListenerMiddleware =
+        createNavigationListenerMiddleware();
 
       const middlewareEnhancer = applyMiddleware(
         ensureLocationMiddleware,

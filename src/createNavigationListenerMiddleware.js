@@ -1,5 +1,4 @@
-import isPromise from 'is-promise';
-import warning from 'warning';
+/* eslint-disable no-console */
 
 import ActionTypes from './ActionTypes';
 import Actions from './Actions';
@@ -9,34 +8,30 @@ function runListenerEntry({ listener }, location, callback) {
   try {
     result = listener(location);
   } catch (e) {
-    warning(
-      false,
-      'Ignoring navigation listener `%s` that failed with `%s`.',
-      listener.name,
-      e,
-    );
+    if (__DEV__)
+      console.warn(
+        `Ignoring navigation listener \`${listener.name}\` that failed with \`${e}\`.`,
+      );
 
     result = null;
   }
 
-  if (!isPromise(result)) {
-    return callback(result);
+  if (typeof result === 'object' && result && result.then) {
+    result
+      .catch((e) => {
+        if (__DEV__)
+          console.warn(
+            `Ignoring navigation listener \`${listener.name}\` that failed with \`${e}\`.`,
+          );
+
+        return null;
+      })
+      .then(callback);
+
+    return undefined;
   }
 
-  result
-    .catch((e) => {
-      warning(
-        false,
-        'Ignoring navigation listener `%s` that failed with `%s`.',
-        listener.name,
-        e,
-      );
-
-      return null;
-    })
-    .then(callback);
-
-  return undefined;
+  return callback(result);
 }
 
 function runListenerEntries(listenerEntries, location, callback) {

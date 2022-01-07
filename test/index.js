@@ -1,5 +1,3 @@
-import 'regenerator-runtime/runtime';
-
 import dirtyChai from 'dirty-chai';
 
 global.chai.use(dirtyChai);
@@ -9,12 +7,12 @@ testsContext.keys().forEach(testsContext);
 
 beforeEach(() => {
   /* eslint-disable no-console */
-  sinon.stub(console, 'error').callsFake((message) => {
+  sinon.stub(console, 'warn').callsFake((message) => {
     let expected = false;
 
-    console.error.expected.forEach((about) => {
+    console.warn.expected.forEach((about) => {
       if (message.includes(about)) {
-        console.error.warned[about] = true;
+        console.warn.warned[about] = true;
         expected = true;
       }
     });
@@ -23,20 +21,20 @@ beforeEach(() => {
       return;
     }
 
-    console.error.threw = true;
+    console.warn.threw = true;
     throw new Error(message);
   });
 
-  console.error.expected = [];
-  console.error.warned = Object.create(null);
-  console.error.threw = false;
+  console.warn.expected = [];
+  console.warn.warned = Object.create(null);
+  console.warn.threw = false;
   /* eslint-enable no-console */
 });
 
 afterEach(() => {
   /* eslint-disable no-console */
-  const { expected, warned, threw } = console.error;
-  console.error.restore();
+  const { expected, warned, threw } = console.warn;
+  console.warn.restore();
 
   if (!threw && expected.length) {
     expect(warned).to.have.keys(expected);
