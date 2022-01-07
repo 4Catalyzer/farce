@@ -1,5 +1,3 @@
-import invariant from 'invariant';
-
 import createPath from './createPath';
 
 export default class BrowserProtocol {
@@ -45,11 +43,9 @@ export default class BrowserProtocol {
     const { action, state } = location;
 
     const push = action === 'PUSH';
-    invariant(
-      push || action === 'REPLACE',
-      `Unrecognized browser protocol action: %s.`,
-      action,
-    );
+
+    if (!push && action !== 'REPLACE')
+      throw Error(`Unrecognized browser protocol action: ${action}`);
 
     const delta = push ? 1 : 0;
     const extraState = this._createExtraState(delta);

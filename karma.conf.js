@@ -1,5 +1,7 @@
 const webpack = require('webpack'); // eslint-disable-line import/no-extraneous-dependencies
 
+process.env.CHROME_BIN = require('puppeteer').executablePath();
+
 module.exports = (config) => {
   const { env } = process;
 

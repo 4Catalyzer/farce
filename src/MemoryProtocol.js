@@ -1,5 +1,3 @@
-import invariant from 'invariant';
-
 import createPath from './createPath';
 import ensureLocation from './ensureLocation';
 
@@ -62,11 +60,9 @@ export default class MemoryProtocol {
     const { action, pathname, search, hash, state } = location;
 
     const push = action === 'PUSH';
-    invariant(
-      push || action === 'REPLACE',
-      `Unrecognized memory protocol action: %s.`,
-      action,
-    );
+
+    if (!push && action !== 'REPLACE')
+      throw Error(`Unrecognized browser protocol action: ${action}`);
 
     const delta = push ? 1 : 0;
     this._index += delta;
