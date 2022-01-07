@@ -5,6 +5,9 @@ on:
   pull_request:
     branches: [master]
 
+env:
+  DISPLAY: :99.0
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,16 +22,16 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Setup xvfb
-        run: |
-          sudo apt-get install xvfb
-          Xvfb $DISPLAY -screen 0 1024x768x24 > /dev/null 2>&1 &
+
       - name: Setup firefox
         if: ${{ matrix.browser == 'Firefox' }}
         uses: browser-actions/setup-firefox@latest
         with:
           firefox-version: 'latest'
-
+      - name: Setup xvfb
+        run: |
+          sudo apt-get install xvfb
+          Xvfb $DISPLAY -screen 0 1024x768x24 > /dev/null 2>&1 &
       - run: yarn install --frozen-lockfile
       - env:
           BROWSER: ${{ matrix.browser }}

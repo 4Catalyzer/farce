@@ -45,7 +45,7 @@ module.exports = (config) => {
 
     customLaunchers: {
       ChromeCi: {
-        base: 'Chrome',
+        base: 'ChromeHeadless',
         flags: ['--no-sandbox'],
       },
     },
