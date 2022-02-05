@@ -45,7 +45,7 @@
   },
   "prettier": "@4c/prettier-config",
   "dependencies": {
-    "query-string": "^5.1.1",
+    "query-string": "^7.1.1",
     "redux": "^4.1.2"
   },
   "devDependencies": {
