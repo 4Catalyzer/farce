@@ -53,8 +53,8 @@
     "@4c/cli": "^3.0.1",
     "@4c/prettier-config": "^1.1.0",
     "@babel/core": "^7.17.10",
-    "@typescript-eslint/eslint-plugin": "^5.21.0",
-    "@typescript-eslint/parser": "^5.21.0",
+    "@typescript-eslint/eslint-plugin": "^5.23.0",
+    "@typescript-eslint/parser": "^5.23.0",
     "babel-loader": "^8.2.5",
     "babel-plugin-add-module-exports": "^1.0.4",
     "babel-plugin-istanbul": "^6.1.1",
@@ -65,7 +65,7 @@
     "cross-env": "^7.0.3",
     "delay": "^4.4.1",
     "dirty-chai": "^2.0.1",
-    "doctoc": "^2.1.0",
+    "doctoc": "^2.2.0",
     "dtslint": "^4.2.1",
     "eslint-config-4catalyzer": "^1.4.1",
     "eslint-config-4catalyzer-typescript": "^3.2.1",
@@ -90,7 +90,7 @@
     "rimraf": "^3.0.2",
     "sinon": "^11.1.2",
     "sinon-chai": "^3.7.0",
-    "webpack": "^5.72.0"
+    "webpack": "^5.72.1"
   },
   "publishConfig": {
     "directory": "lib"
