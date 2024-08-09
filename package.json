@@ -83,7 +83,7 @@
     "karma-sourcemap-loader": "^0.3.8",
     "karma-webpack": "^5.0.0",
     "lint-staged": "^12.4.1",
-    "mocha": "^9.2.2",
+    "mocha": "^10.7.3",
     "p-defer": "^3.0.0",
     "prettier": "^2.6.2",
     "puppeteer": "^13.7.0",
