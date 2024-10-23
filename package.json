@@ -58,7 +58,7 @@
     "babel-loader": "^8.2.5",
     "babel-plugin-add-module-exports": "^1.0.4",
     "babel-plugin-istanbul": "^6.1.1",
-    "chai": "^4.3.6",
+    "chai": "^5.1.2",
     "cherry-pick": "^0.5.0",
     "codecov": "^3.8.3",
     "cpy-cli": "^3.1.1",
