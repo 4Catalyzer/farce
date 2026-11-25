@@ -49,7 +49,7 @@
     "redux": "^4.1.2"
   },
   "devDependencies": {
-    "@4c/babel-preset": "^9.1.0",
+    "@4c/babel-preset": "^10.2.1",
     "@4c/cli": "^3.0.1",
     "@4c/prettier-config": "^1.1.0",
     "@babel/core": "^7.17.10",
